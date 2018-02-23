@@ -2,7 +2,7 @@ import unittest
 
 #import sys
 #sys.path.append('../ROS')
-from directionfinder import direct_finder
+from ROS.directionfinder import direct_finder
 #from directionfinder import direct_sub
 
 class directTest(unittest.TestCase):
