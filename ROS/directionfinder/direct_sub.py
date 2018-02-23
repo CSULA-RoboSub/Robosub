@@ -41,5 +41,19 @@ def get_coords():
     rospy.Subscriber('xy_coordinate', Int32MultiArray, directions)
     rospy.spin()
 
+def subTravis():
+    print('testing testing')
+    rospy.init_node('subTravis', anonymous=False)
+    rospy.Subscriber('xy_coordinate', Int32MultiArray, coorTravis)
+    rospy.spin()
+
+def coorTravis(data):
+    rospy.loginfo('Receiving coordinates from ROS')
+    coordinates = data.data
+    x = coordinates[0]
+    y = coordinates[1]
+
+    return coordinates
+
 if __name__ == '__main__':
     get_coords()

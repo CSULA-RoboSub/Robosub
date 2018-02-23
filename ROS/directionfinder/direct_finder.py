@@ -2,6 +2,8 @@ import rospy
 from random import *
 from std_msgs.msg import Int32
 from std_msgs.msg import Int32MultiArray
+
+import direct_sub
 import time
 import sys
 sys.path.insert(0, '/home/niivek/Desktop/ros_libraries/openCV')
@@ -135,6 +137,28 @@ def turn_off_hardware():
 def resetVariables(xyCoordinates):
     xyCoordinates.pop()
     xyCoordinates.pop()
+
+def forTravis(x, y):
+    print('x coordinate: {}'.format(x))
+    print('y coordinate: {}'.format(y))
+    pub_x = rospy.Publisher('x_coordinate', Int32, queue_size=10)
+    pub_y = rospy.Publisher('y_coordinate', Int32, queue_size=10)
+    pub_both = rospy.Publisher('xy_coordinate', Int32MultiArray, queue_size=10)
+
+    rospy.init_node('direction_node')
+    array = []
+    array.append(x)
+    array.append(y)
+    
+    pub_array = Int32MultiArray(data=array)
+
+    rospy.loginfo('sending coordinates to ROS')
+    pub_x.publish(x)
+    pub_y.publish(y)
+    pub_both.publish(pub_array)
+
+    return array
+
 
 def main():
     cvCoordinates = []
