@@ -5,10 +5,8 @@ from std_msgs.msg import Int32MultiArray
 
 import direct_sub
 import time
-import sys
-sys.path.insert(0, '/home/niivek/Desktop/ros_libraries/openCV')
 
-from taskManager import taskManager
+from ROS.openCV import taskManager
 
 motorNodeIsReady = False
 cvNodeIsready = False
