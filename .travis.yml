@@ -1,5 +1,5 @@
 language: python
 python:
   - "2.7"
-install: ["make build"]
+install: "make build"
 script: "cd cs4660 && python -m unittest"
