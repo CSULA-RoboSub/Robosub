@@ -1,9 +1,9 @@
 import unittest
 
-import sys
-sys.path.insert(0, '/home/niivek/Desktop/Robosub_github/Robosub/ROS')
+#import sys
+#sys.path.append('../ROS')
 from directionfinder import direct_finder
-from directionfinder import direct_sub
+#from directionfinder import direct_sub
 
 class directTest(unittest.TestCase):
     def test_directions(self):
