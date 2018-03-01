@@ -136,7 +136,7 @@ def resetVariables(xyCoordinates):
     xyCoordinates.pop()
     xyCoordinates.pop()
 
-def forTravis(x, y):
+def forUnit(x, y):
     print('x coordinate: {}'.format(x))
     print('y coordinate: {}'.format(y))
     pub_x = rospy.Publisher('x_coordinate', Int32, queue_size=10)
