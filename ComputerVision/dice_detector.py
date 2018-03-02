@@ -1,12 +1,14 @@
 '''Dice Detector does the actual detection of all the dice objects and
 handles direction setting for the ros to grab'''
 import math
+import Detector
 import utils
 import dice_classifier as dc
 import dice_preprocess as dpp
 import cv2
 
-class dice_detector():
+class dice_detector(Detector):
+
     '''
     the initialization will take a cam parameter so that we know which camera we are selecting
         later in documentation we should include which camera is which by number.
@@ -39,7 +41,6 @@ class dice_detector():
         for i in range(1, len(path_centers)):
             if utils.dist(path_centers[i]) < utils.dist(path_centers[low]):
                 low = i
-
 
     def search_die(self, value):
         candidate_dice = self.pp.get_interest_areas()

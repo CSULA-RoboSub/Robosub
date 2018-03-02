@@ -1,5 +1,7 @@
 import math
-def printConfusionMatrix(result, labels):
+
+
+def print_confusion_matrix(result, labels):
     result0 = [int(x) for x in result]
 
     falsePositives = 0
@@ -8,43 +10,43 @@ def printConfusionMatrix(result, labels):
     trueNegatives = 0
 
     for i, row in enumerate(labels):
-        if row  == 1 and result[i] == 1:
-            truePositives +=1
-        if row  != 1 and result[i] != 1:
-            trueNegatives +=1
-        if row  != 1 and result[i] == 1:
-            falsePositives +=1
+        if row == 1 and result[i] == 1:
+            truePositives += 1
+        if row != 1 and result[i] != 1:
+            trueNegatives += 1
+        if row != 1 and result[i] == 1:
+            falsePositives += 1
         if row == 1 and result[i] != 1:
-            falseNegatives +=1
+            falseNegatives += 1
 
     print "true pos:", truePositives, "true neg:", trueNegatives, "false pos:", falsePositives, "false neg:", falseNegatives, "\n"
 
 
 def find_angle(center, x, y, w, h):
-    midpoint = ( x + ( w / 2), y + ( h / 2))
-    angle = math.atan2( midpoint[1] - center[1], midpoint[0] - center[0])
+    midpoint = (x + (w / 2), y + (h / 2))
+    angle = math.atan2(midpoint[1] - center[1], midpoint[0] - center[0])
     return angle
 
 
 colors = {"green": (0, 255, 0), "black": (0, 0, 0), "magenta": (255, 0, 255),  "red": (255, 0, 0),  "gold": (255, 165, 0), "white": (255, 255, 255), "blue": (0, 0, 255)}
 
 
-def get_directions(center,x,y,w,h):
+def get_directions(center, x, y, w, h):
     direction = [0,0]
     print 'in get directions'
-    wPad = w / 3
-    hPad = h / 3
+    w_pad = w / 3
+    h_pad = h / 3
     cx = center[0]
     cy = center[1]
-    if(cx < x + wPad):
-        if(cx > x + (2 * wPad)):
+    if cx < x + w_pad:
+        if cx > x + (2 * w_pad):
             direction[0] = 0
         else:
             direction[0] = 1
     else:
         direction[0] = -1
-    if(cy > y + hPad):
-        if(cy < y + (2 * hPad)):
+    if cy > y + h_pad:
+        if cy < y + (2 * h_pad):
             direction[1] = 0
         else:
             direction[1] = 1
