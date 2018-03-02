@@ -5,6 +5,7 @@ import sys
 import unittest
 
 from ROS.directionfinder import direct_finder
+from ROS.directionfinder import direct_sub
 
 print('ROS_unittest')
 print()
@@ -26,9 +27,14 @@ class TestingMisc(unittest.TestCase):
         print('testing misc')
         self.assertNotEqual(1, 0)
         self.assertEquals(1, 1+0, 2-1)
+class TestingSub(unittest.TestCase):
+    def test_sub(self):
+        print('testing subscriber node')
+        self.assertEqual(direct_finder.forUnit(3, 4), [3,4])
 
 if __name__ == '__main__':
     import rostest
     rostest.rosrun(PKG, 'test_directions', TestingDirections)
     rostest.rosrun(PKG, 'test_other_funtions', TestingOthers)
     rostest.rosrun(PKG, 'test_misc', TestingMisc)
+    rostest.rosrun(PKG, 'test_sub', TestingSub)

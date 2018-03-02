@@ -43,7 +43,7 @@ def get_coords():
 
 def subTravis():
     print('testing testing')
-    rospy.init_node('subTravis', anonymous=False)
+    #rospy.init_node('subTravis', anonymous=False)
     rospy.Subscriber('xy_coordinate', Int32MultiArray, coorTravis)
     rospy.spin()
 
