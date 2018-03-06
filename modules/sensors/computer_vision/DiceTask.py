@@ -2,7 +2,7 @@
 Dice task will handle the actual all the individual compenents
 which need to be completed to handle the task including which dice need to be searched for
 '''
-import dice_detector as detector
+import DiceDetector as detector
 import Task
 
 

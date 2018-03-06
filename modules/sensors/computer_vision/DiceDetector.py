@@ -3,11 +3,11 @@ handles direction setting for the ros to grab'''
 import math
 import Detector
 import utils
-import dice_classifier as dc
-import dice_preprocess as dpp
+import DiceClassifier as dc
+import DicePreprocess as dpp
 import cv2
 
-class dice_detector(Detector):
+class DiceDetector:
 
     '''
     the initialization will take a cam parameter so that we know which camera we are selecting
