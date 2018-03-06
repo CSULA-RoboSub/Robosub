@@ -24,6 +24,7 @@ class BuoyClassifier:
         self.nlevels = 64
         self.dims = (96, 144)
         self.hog = self.get_hog()
+        self.lsvm = self.get_lsvm()
 
     '''note that the height and widths must be multiples of 8 in order to use a HOOG'''
     def get_hog(self):
@@ -52,8 +53,8 @@ class BuoyClassifier:
             n = cv2.imread(img)
             neg_imgs.append(n)
 
-        positive_data = self.get_features_with_label(pos_imgs, self.hog, self.dims, 1)
-        negative_data = self.get_features_with_label(neg_imgs, self.hog, self.dims, 0)
+        positive_data = self.get_features_with_label(pos_imgs, 1)
+        negative_data = self.get_features_with_label(neg_imgs, 0)
 
         data = positive_data + negative_data
         shuffle(data)
@@ -74,3 +75,19 @@ class BuoyClassifier:
         result = lsvm.predict(test_feat)
 
         return lsvm
+    '''
+        this returns the max value for the buoy, (x,y)  as topleft corner 
+        then w,h and width and height respectively.
+    '''
+    def classify(self,frame,roi): #roi = regions of interest
+        buoy = None
+        max = 0
+        for box in roi:
+            x, y, w, h = box
+            window = frame[y:y+h, x:x+w, :]
+            window = cv2.resize(window, self.dims)
+            feat = self.hog.compute(window)
+            prob = self.lsvm.predict_proba(feat.reshape(1, -1))[0]
+            if prob[1] > .1 and prob[1] > max:
+                buoy = box
+        return buoy
