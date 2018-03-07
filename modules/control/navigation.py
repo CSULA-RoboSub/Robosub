@@ -1,4 +1,5 @@
 import rospy
+from std_msgs.msg import Float32
 from std_msgs.msg import Int32MultiArray
 from time import sleep
 
@@ -11,7 +12,7 @@ class Navigation():
     rotation: negative = left, positive = right, 0 = no rotation
     """
 
-    def __init__(self, x=0, y=0, z=0, rotation=0):
+    def __init__(self, x=0, y=0, z=0, rotation=0.0):
         self.is_killswitch_on = False
 
         # horizontal x movement: negative = left, positive = right, 0 = no  x movement
@@ -26,7 +27,7 @@ class Navigation():
         # rotation: negative = left, positive = right, 0 = no rotation
         self.rotation = rotation
 
-    def set_navigation(self, x=0, y=0, z=0, rotation=0):
+    def set_navigation(self, x=0, y=0, z=0, rotation=0.0):
         """
         horizontal x movement: negative = left, positive = right, 0 = no x movement
         horizontal y movement: negative = backwards, positive = forwards, 0 = no y movement
@@ -55,7 +56,7 @@ class Navigation():
         if self.is_killswitch_on:
 
             print('submerging AUV')
-            self.pub_navigate(0, 0, z, 0)
+            self.pub_navigate(0, 0, z, 0.0)
 
     def brake(self):
         """ Stops the AUV and propels it the opposite y value to stop momentum"""
@@ -63,15 +64,17 @@ class Navigation():
         if self.is_killswitch_on:
 
             print('braking AUV')
-            self.pub_navigate(0, -self.y, 0, 0)
+            self.pub_navigate(0, -self.y, 0, 0.0)
 
     def pub_navigate(self, x, y, z, rotation):
         """ Private method used to publish given x, y, z, rotation"""
 
-        navigate = Int32MultiArray(data=[x, y, z, rotation])
+        navigate = Int32MultiArray(data=[x, y, z])
         pub_navigate = rospy.Publisher('navigation', Int32MultiArray, queue_size=10)
+        pub_rotation = rospy.Publisher('rotation', Float32, queue_size=10)
 
         pub_navigate.publish(navigate)
+        pub_rotation.publish(rotation)
         sleep(.2)
 
         print('moving AUV to x=%d, y=%d, z=%d, rotation=%d' % (x, y, z, rotation))
