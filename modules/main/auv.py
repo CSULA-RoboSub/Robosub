@@ -4,6 +4,7 @@ from std_msgs.msg import Int32
 from test import test_movement
 from modules.control.motor import Motor
 from modules.control.direction import Direction
+from modules.tasks import task_manager
 
 
 class AUV():
