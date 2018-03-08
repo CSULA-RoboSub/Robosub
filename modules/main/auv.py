@@ -1,10 +1,6 @@
-import rospy
-
-from std_msgs.msg import Int32
-from test import test_movement
+# from test import test_movement
 from modules.control.motor import Motor
-from modules.control.direction import Direction
-from modules.tasks import task_manager
+from modules.control.navigation import Navigation
 
 
 class AUV():
@@ -16,6 +12,7 @@ class AUV():
 
         # self.test
         self.motor = Motor()  # initialize Motor() class
+        self.navigation = Navigation()  # initialize Navigation() class
         # TODO self.cv = CV() # initialize CV() class
         # TODO construct modules, refactor robosub.py
 
@@ -23,6 +20,7 @@ class AUV():
         """Starts the modules when magnet killswitch is plugged in"""
 
         self.motor.start()
+        self.navigation.start()
         # self.cv.start(self.tasks)
 
     def stop(self):
