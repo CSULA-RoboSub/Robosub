@@ -11,6 +11,7 @@ class TaskManager():
     def __init__(self):
     """ To initialize the TaskManger. """
         self.coordinates = []
+        n
         #self.is_killswitch_on = navigation.check_kill()
 
     def gate_detect(self):
@@ -56,7 +57,7 @@ class TaskManager():
     def start(self):
         """ Starts TaskManager. """
         # TODO perhaps start needs to be call along with which task you would like to perform
-        pass
+        self.navigation.start()
         
     def stop(self):
         """ Stops TasksManager. """

@@ -58,8 +58,4 @@ class Motor():
 
         self.is_killswitch_on = False
 
-<<<<<<< HEAD
         self.pub_motor_state(0)
-=======
-        self.pub_motor_state(0)
->>>>>>> origin/CLI-Dev-Henry

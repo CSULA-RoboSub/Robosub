@@ -89,8 +89,4 @@ class Navigation():
     def stop(self):
         """Stops direction when killswitch is unplugged"""
 
-<<<<<<< HEAD
         self.is_killswitch_on = False
-=======
-        self.is_killswitch_on = False
->>>>>>> origin/CLI-Dev-Henry
