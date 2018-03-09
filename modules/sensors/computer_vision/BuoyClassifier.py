@@ -25,6 +25,7 @@ class BuoyClassifier:
         self.dims = (96, 144)
         self.hog = self.get_hog()
         self.lsvm = self.get_lsvm()
+        print 'classifier finished being built'
 
     '''note that the height and widths must be multiples of 8 in order to use a HOOG'''
     def get_hog(self):
