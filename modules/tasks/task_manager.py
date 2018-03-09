@@ -23,9 +23,9 @@ class TaskManager():
 
     # TODO need to find out which cv node to get coordinates from
         print("detect_gate")
-        self.coordinates.append(randint(-1,1))
-        self.coordinates.append(randint(-1,1))
-        self.navigation.nagivate(1, 1, 1, 1)
+        #self.coordinates.append(randint(-1,1))
+        #self.coordinates.append(randint(-1,1))
+        #self.navigation.nagivate(1, 1, 1, 1)
 
     def detect_dice(self):
         """ When dice_detect task is called. """
@@ -45,17 +45,17 @@ class TaskManager():
         """ When roulette_detect task is called. """
 
         print("detect_roulette")
-        self.coordinates.append(randint(-1,1))
-        self.coordinates.append(randint(-1,1))
-        self.navigation.nagivate(1, 1, 1, 1)
+        #self.coordinates.append(randint(-1,1))
+        #self.coordinates.append(randint(-1,1))
+        #self.navigation.nagivate(1, 1, 1, 1)
 
     def detect_cash_in(self):
         """ When cash_in_detect task is called. """
 
         print("detect_cash_in")
-        self.coordinates.append(randint(-1,1))
-        self.coordinates.append(randint(-1,1))
-        self.navigation.nagivate(1, 1, 1, 1)
+        #self.coordinates.append(randint(-1,1))
+        #self.coordinates.append(randint(-1,1))
+        #self.navigation.nagivate(1, 1, 1, 1)
 
     def detect_buoy(self):
         """ When detect_buoy task is called. """
@@ -74,7 +74,7 @@ class TaskManager():
         pub_array = Int32MultiArray(data=buoy_coordinates)
 
         rospy.loginfo('sending coordinates to ROS')
-        pub_tas.publish(pub_array)
+        pub_task.publish(pub_array)
 
         #rospy.init_node('buoy_coordinates', anonymous=True)
         #rospy.Subscriber('xy_coordinate', Int32MultiArray, directions)
@@ -99,6 +99,11 @@ class TaskManager():
         
     def stop(self):
         """ Stops TasksManager. """
-        
+        rospy.on_shutdown(shutdown())
         # TODO can perhaps be used to stop a task when a error/checker is found
         pass
+
+    def shutdown():
+        """ Shutdown message for TaskManager """
+
+        print('Shutting down Taskmanager')
