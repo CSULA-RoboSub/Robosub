@@ -19,6 +19,7 @@ class BuoyPreprocessor:
         return output, mask
 
     def get_interest_regions(self,frame):
+
         height, width, lines = frame.shape
         center = (width / 2, height / 2)
         pimage, mask = self.preprocess(frame)
@@ -27,7 +28,10 @@ class BuoyPreprocessor:
         edges = cv2.Canny(binary_image, 50, 150)
 
         im, contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        #cv2.imshow('pimage',pimage)
+        #cv2.imshow('mask',mask)
         boxes = [cv2.boundingRect(c) for c in contours]
+
         interest_regions = [b for b in boxes if b[2]*b[3] > self.roi_size]
 
         return interest_regions
