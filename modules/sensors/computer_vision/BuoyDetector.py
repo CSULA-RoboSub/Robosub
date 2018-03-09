@@ -9,6 +9,7 @@ class BuoyDetector:
 
     def __init__(self):
         self.classifier = bc.BuoyClassifier()
+        self.found =  False;
         self.cap = cv2.VideoCapture(0)
         self.preprocess = bp.BuoyPreprocessor()
         self.hog = self.classifier.get_hog()
@@ -41,11 +42,13 @@ class BuoyDetector:
 
         if buoy == None:
             self.directions = [0,0]
+            self.found = False
         else:
             x,y,w,h = buoy
             cv2.rectangle(frame, (x,y), (x+w, y+h), utils.colors["blue"], 6)
             self.directions = utils.get_directions(center, x,y,w,h)
+            self.found = True
 
         self.out.write(frame)
-        return self.directions
+        return self.found, self.directions
 
