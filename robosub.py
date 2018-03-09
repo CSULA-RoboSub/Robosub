@@ -146,6 +146,8 @@ if __name__ == '__main__':
 
     AUV = AUV()  # initialize AUV() class
 
+    rospy.Subscriber('kill_switch', Int32, callback)  # Subscriber for magnet kill switch
+
     print('\n***Plug in magnet after setting up configurations to start AUV.***')
 
     AUV.start()  # TESTING PURPOSES ONLY. REMOVE AFTER TESTING (simulates magnet killswitch = 1#############################################################
