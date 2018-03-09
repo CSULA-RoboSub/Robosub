@@ -1,4 +1,4 @@
-import DetectBuoy as db
+import BuoyDetector as db
 bd = db.DetectBuoy()
 print bd.coords
 

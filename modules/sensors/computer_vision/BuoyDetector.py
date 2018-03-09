@@ -4,7 +4,7 @@ import cv2
 import BuoyPreprocessor as bp
 
 
-class DetectBuoy:
+class BuoyDetector:
 
     def __init__(self):
         self.classifier = bc.BuoyClassifier()
@@ -15,7 +15,7 @@ class DetectBuoy:
         print (self.lsvm)
         self.lower = [0,60,60]
         self.upper = [60,255,255]
-        self.coords = (0,0)
+        self.directions = (1,0)
         self.isTaskComplete = False
         print self.isTaskComplete
 
@@ -37,5 +37,5 @@ class DetectBuoy:
         if buoy == None:
             buoy = 100,100,140,280
         x,y,w,h = buoy
-        self.coords = utils.get_directions(center, x,y,w,h)
+        self.directions = utils.get_directions(center, x,y,w,h)
 
