@@ -15,7 +15,7 @@ class TaskManager():
 
         self.coordinates = []
         self.navigation = Navigation()
-        rospy.init_node('task_manager')
+        #rospy.init_node('task_manager')
         #self.is_killswitch_on = navigation.check_kill()
 
     def detect_gate(self):
@@ -65,19 +65,29 @@ class TaskManager():
 
         # included 2 mothods to broadcast coordinates
         # could broadcast through ROS or be called by the module name
+
+        """ This is the portion that must be sent back to HOUSTON """
+        """ We are calling DetectBuoy to detect the buoy in the pool """
+        """ Then sending the coordinates back to HOUSTON """
+        """ which will be sent from HOUSTON to NAVIGATION """
+        """ ********************************************* """
         print("detect_buoy")
         detectbuoy = DetectBuoy()
         buoy_coordinates = detectbuoy.detect()
+
+        # TODO send coordinates to Houston
+
+
         self.navigation.nagivate(buoy_coordinates)
 
-        pub_task = rospy.Publisher('coordinates', Int32MultiArray, queue_size=10)
+        '''pub_task = rospy.Publisher('coordinates', Int32MultiArray, queue_size=10)
         pub_array = Int32MultiArray(data=buoy_coordinates)
 
         rospy.loginfo('sending coordinates to ROS')
         pub_task.publish(pub_array)
 
-        #rospy.init_node('buoy_coordinates', anonymous=True)
-        #rospy.Subscriber('xy_coordinate', Int32MultiArray, directions)
+        rospy.init_node('buoy_coordinates', anonymous=True)
+        rospy.Subscriber('xy_coordinate', Int32MultiArray, directions)'''
 
     def direction(data):
         """ Directions is called upon after rospy.subscriber to obtain value from ROS """
