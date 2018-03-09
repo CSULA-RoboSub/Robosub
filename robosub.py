@@ -21,8 +21,6 @@ except ImportError:
 
     sys.exit()
 finally:
-    from std_msgs.msg import Int32
-
     """Import auv"""
     from modules.main.auv import AUV
 
@@ -137,14 +135,6 @@ def parse(arg):
     return tuple(map(int, arg.split()))
 
 
-def callback(data):
-    # print(data.data)
-    if data.data == 1:
-        AUV.start()
-    if data.data == 0:
-        AUV.stop()
-
-
 if __name__ == '__main__':
     # open roscore in subprocess
     print('Setting up roscore.')
@@ -154,7 +144,6 @@ if __name__ == '__main__':
     roscore = subprocess.Popen('roscore')
     time.sleep(1)
 
-    rospy.init_node('AUV', anonymous=True)  # initialize AUV rosnode
     AUV = AUV()  # initialize AUV() class
 
     rospy.Subscriber('kill_switch', Int32, callback)  # Subscriber for magnet kill switch
