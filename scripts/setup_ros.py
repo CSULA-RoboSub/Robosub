@@ -18,6 +18,7 @@ def run_script(script):
 def install():
     """Installs scripts for first time setup"""
     scripts = [
+        'scripts/0fix_ubuntu.sh',
         'scripts/1setup_ros.sh',
         'scripts/2ros_environment.sh',
         'scripts/3ros_serial_setup.sh'

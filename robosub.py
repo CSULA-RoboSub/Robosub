@@ -20,9 +20,9 @@ except ImportError:
         setup_ros.install()
 
     sys.exit()
-finally:
-    """Import auv"""
-    from modules.main.auv import AUV
+
+"""Import auv"""
+from modules.main.auv import AUV
 
 
 class CLI(cmd.Cmd):
