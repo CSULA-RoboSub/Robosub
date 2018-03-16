@@ -53,39 +53,27 @@ class TaskManager:
         self.coordinates = []
         self.detectbuoy = BuoyDetector.BuoyDetector()
         self.detectdice = DiceDetector.DiceDetector()
-        # self.detectdice = DiceDetector.DiceDetector()
-        #self.navigation = Navigation()
-        #self.is_killswitch_on = navigation.check_kill()
 
     def detect_gate(self):
         """ When gate_detect task is called. """
 
     # TODO need to find out which cv node to get coordinates from
         print("detect_gate")
-        #self.coordinates.append(randint(-1,1))
-        #self.coordinates.append(randint(-1,1))
-        #self.navigation.nagivate(1, 1, 1, 1)
-
         found, gate_coordinates = self.detectgate.detect()
-
         return found, gate_coordinates
 
     def detect_dice(self):
-        """ When dice_detect task is called. """
-        """ calls DiceDetector module and creates an instance """
-        """ then gets the coordinates of the dice in the pool """
-        """ putting coordinates in dice_coordinates """
-        """ sends coordinates to navigation module """
-
+        """When detect_dice task is called. """
         print("detect_dice")
         found, dice_coordinates = self.detectdice.detect()
-
         return found, dice_coordinates
 
     def detect_roulette(self):
         """ When roulette_detect task is called. """
 
         print("detect_roulette")
+        found, roulette_coordinates = self.detectroulette.detect()
+        return found, roulette_coordinates
         #self.coordinates.append(randint(-1,1))
         #self.coordinates.append(randint(-1,1))
         #self.navigation.nagivate(1, 1, 1, 1)
@@ -94,6 +82,8 @@ class TaskManager:
         """ When cash_in_detect task is called. """
 
         print("detect_cash_in")
+        found, cash_in_coordinates = self.detectcashin.detect()
+        return found, cash_in_coordinates
         #self.coordinates.append(randint(-1,1))
         #self.coordinates.append(randint(-1,1))
         #self.navigation.nagivate(1, 1, 1, 1)
@@ -114,8 +104,6 @@ class TaskManager:
         """ ********************************************* """
         print("detect_buoy")
         found, buoy_coordinates = self.detectbuoy.detect()
-
-        # TODO send coordinates to Houston
         return found, buoy_coordinates
 
 
@@ -158,7 +146,9 @@ def talker():
     #     rospy.loginfo(msg)
     #     pub.publish(msg)
     #     r.sleep()
-    userinput = input('enter task to run...(buoy, dice, gate)')
+    """ added just to test other methods """
+    """ will only loop one specific task until shutdown """
+    userinput = input('enter task to run...(buoy, dice, gate are only options for now)')
     
     pub = rospy.Publisher('cv_to_master', CVIn)
     rospy.init_node('cv_talker', anonymous=True)
@@ -167,15 +157,17 @@ def talker():
     msg = CVIn()
 
     while not rospy.is_shutdown():
-
-        if (userinput == 'buoy')
+    # task manager will need to get task from auv(houston)"""
+    # which will be give to houston by the task queue """
+        if (userinput == 'buoy'):
             msg.found, coords = tm.detect_buoy()
-        elif (userinput == 'dice')
+        elif (userinput == 'dice'):
             msg.found, coords = tm.detect_dice()
-        elif (userinput == 'gate')
+        elif (userinput == 'gate'):
             msg.found, coords = tm.detect_gate()
-
-            
+        else:
+            print('incorrect user input, please try again')
+            rospy.on_shutdown(close)
         msg.horizontal = coords[0]
         msg.vertical = coords[1]
         msg.distance = 1.25
@@ -190,3 +182,6 @@ if __name__ == '__main__':
         talker()
     except rospy.ROSInterruptException: 
         pass
+
+def close():
+    print('ros is shutting down')
