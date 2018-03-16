@@ -57,13 +57,13 @@ class TaskManager:
     def detect_gate(self):
         """ When gate_detect task is called. """
 
-    # TODO need to find out which cv node to get coordinates from
         print("detect_gate")
         found, gate_coordinates = self.detectgate.detect()
         return found, gate_coordinates
 
     def detect_dice(self):
         """When detect_dice task is called. """
+        
         print("detect_dice")
         found, dice_coordinates = self.detectdice.detect()
         return found, dice_coordinates
@@ -74,9 +74,6 @@ class TaskManager:
         print("detect_roulette")
         found, roulette_coordinates = self.detectroulette.detect()
         return found, roulette_coordinates
-        #self.coordinates.append(randint(-1,1))
-        #self.coordinates.append(randint(-1,1))
-        #self.navigation.nagivate(1, 1, 1, 1)
 
     def detect_cash_in(self):
         """ When cash_in_detect task is called. """
@@ -84,28 +81,33 @@ class TaskManager:
         print("detect_cash_in")
         found, cash_in_coordinates = self.detectcashin.detect()
         return found, cash_in_coordinates
-        #self.coordinates.append(randint(-1,1))
-        #self.coordinates.append(randint(-1,1))
-        #self.navigation.nagivate(1, 1, 1, 1)
 
     def detect_buoy(self):
         """ When detect_buoy task is called. """
-        """ Once called, will retreive coordinates from ROS with subscriber """
-        """ Then will send coordinates to Navigation module """
-        """ Sub will navigate towards listed coordinates """
+        """ Once called, will retreive coordinates from BuoyDetector """
+        """ Then will publish coordinates to ROS """
+        """ Navigation will retrieve coordinates from ROS """
+        """ The proceed to coordinates """
 
-        # included 2 mothods to broadcast coordinates
-        # could broadcast through ROS or be called by the module name
-
-        """ This is the portion that must be sent back to HOUSTON """
-        """ We are calling DetectBuoy to detect the buoy in the pool """
-        """ Then sending the coordinates back to HOUSTON """
-        """ which will be sent from HOUSTON to NAVIGATION """
-        """ ********************************************* """
         print("detect_buoy")
         found, buoy_coordinates = self.detectbuoy.detect()
         return found, buoy_coordinates
 
+    def complete_buoy(self):
+        """ Will run to complete the buoy task """
+        pass
+
+    def complete_dice(self):
+        """ Will run to complte the dice task. """
+        pass
+
+    def complete_gate(self):
+        """ Will run to complete the gate task. """
+        pass
+
+    def complete_roulette(self):
+        """ Will run to complete the roulettet task. """
+        pass
 
     def brake(self):
         """ When brake task is called by auv.py. """
@@ -146,8 +148,8 @@ def talker():
     #     rospy.loginfo(msg)
     #     pub.publish(msg)
     #     r.sleep()
-    """ added just to test other methods """
-    """ will only loop one specific task until shutdown """
+    """ Added just to test other methods. """
+    """ Will only loop one specific task until shutdown. """
     userinput = input('enter task to run...(buoy, dice, gate are only options for now)')
     
     pub = rospy.Publisher('cv_to_master', CVIn)
@@ -185,3 +187,6 @@ if __name__ == '__main__':
 
 def close():
     print('ros is shutting down')
+
+def taskcompleted():
+    pass
