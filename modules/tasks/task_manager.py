@@ -158,7 +158,8 @@ def talker():
     #     rospy.loginfo(msg)
     #     pub.publish(msg)
     #     r.sleep()
-
+    userinput = input('enter task to run...(buoy, dice, gate)')
+    
     pub = rospy.Publisher('cv_to_master', CVIn)
     rospy.init_node('cv_talker', anonymous=True)
     r = rospy.Rate(30) #30hz
@@ -167,7 +168,12 @@ def talker():
 
     while not rospy.is_shutdown():
 
-        msg.found, coords = tm.detect_buoy()
+        if (userinput == 'buoy')
+            msg.found, coords = tm.detect_buoy()
+        elif (userinput == 'dice')
+            msg.found, coords = tm.detect_dice()
+        elif (userinput == 'gate')
+            msg.found, coords = tm.detect_gate()
         msg.horizontal = coords[0]
         msg.vertical = coords[1]
         msg.distance = 1.25
