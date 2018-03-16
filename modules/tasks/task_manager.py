@@ -174,6 +174,8 @@ def talker():
             msg.found, coords = tm.detect_dice()
         elif (userinput == 'gate')
             msg.found, coords = tm.detect_gate()
+
+            
         msg.horizontal = coords[0]
         msg.vertical = coords[1]
         msg.distance = 1.25
