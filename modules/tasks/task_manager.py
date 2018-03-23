@@ -54,11 +54,18 @@ class TaskManager:
         self.detectbuoy = BuoyDetector.BuoyDetector()
         self.detectdice = DiceDetector.DiceDetector()
 
+        self.dice_pair = []
+        self.complete_first_die = False
+        self.complete_second_die = False
+
     def detect_gate(self):
         """ When gate_detect task is called. """
 
         print("detect_gate")
         found, gate_coordinates = self.detectgate.detect()
+        if (gate_coordinates[0] == 0 && gate_coordinates[1] == 0):
+            global gate_found
+            gate_found = True
         return found, gate_coordinates
 
     def detect_dice(self):
@@ -66,6 +73,10 @@ class TaskManager:
         
         print("detect_dice")
         found, dice_coordinates = self.detectdice.detect()
+        if (dice_coordinates[0] == 0 && dice_coordinates[1] == 0):
+            global dice_found
+            dice_found = True
+            dice_pair = self.dicedetector.getSum()
         return found, dice_coordinates
 
     def detect_roulette(self):
@@ -73,6 +84,9 @@ class TaskManager:
 
         print("detect_roulette")
         found, roulette_coordinates = self.detectroulette.detect()
+        if (roulette_coordinates[0] == 0 && roulette_coordinates[1] == 0):
+            global roulette_found
+            roulette_found = True
         return found, roulette_coordinates
 
     def detect_cash_in(self):
@@ -80,6 +94,9 @@ class TaskManager:
 
         print("detect_cash_in")
         found, cash_in_coordinates = self.detectcashin.detect()
+        if (cash_in_coordinates[0] == 0 && cash_in_coordinates[1] == 0):
+            global cash_in_found
+            cash_in_found = True
         return found, cash_in_coordinates
 
     def detect_buoy(self):
@@ -93,17 +110,22 @@ class TaskManager:
         found, buoy_coordinates = self.detectbuoy.detect()
         return found, buoy_coordinates
 
+    def complete_gate(self):
+        """ Will run to complete the gate task. """
+        pass
+
     def complete_buoy(self):
         """ Will run to complete the buoy task """
         pass
 
     def complete_dice(self):
         """ Will run to complte the dice task. """
-        pass
-
-    def complete_gate(self):
-        """ Will run to complete the gate task. """
-        pass
+        """ Will need to touch 2 dices that add up to 7 or 11 """
+        if (!complete_first_die):
+            found, dice_direction = self.dicedetector.find_die(dice_pair[0])
+        elseif (complete_first_die && !complete_second_die):
+            found, dice_direction = self.dicedetector.find_die(dice_pair[1])
+        return found, dice_direction
 
     def complete_roulette(self):
         """ Will run to complete the roulettet task. """
@@ -157,6 +179,15 @@ def talker():
     r = rospy.Rate(30) #30hz
     
     msg = CVIn()
+    gate_found = False
+    dice_found = False
+    roulette_found = False
+    cash_in_found = False
+
+    gate_done = False
+    dice_done = False
+    roulette_done = False
+    cash_in_done = False
 
     while not rospy.is_shutdown():
     # task manager will need to get task from auv(houston)"""
@@ -164,7 +195,10 @@ def talker():
         if (userinput == 'buoy'):
             msg.found, coords = tm.detect_buoy()
         elif (userinput == 'dice'):
-            msg.found, coords = tm.detect_dice()
+            if (!dice_found):
+                msg.found, coords = tm.detect_dice()
+            else:
+                msg.found,coords = tm.complete_dice()
         elif (userinput == 'gate'):
             msg.found, coords = tm.detect_gate()
         else:
