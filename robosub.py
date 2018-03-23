@@ -20,9 +20,9 @@ except ImportError:
         setup_ros.install()
 
     sys.exit()
-
-"""Import auv"""
-from modules.main.auv import AUV
+else:
+    """Import auv"""
+    from modules.main.auv import AUV
 
 
 class CLI(cmd.Cmd):
@@ -58,10 +58,14 @@ class CLI(cmd.Cmd):
 
         if arg.lower() == 'view':
             print(AUV.tasks)
+        elif arg.lower() == 'set':
+            # TODO set tasks
+            AUV.set_config('tasks', '0 1 2 3 4 5 6 7 8')
         elif arg.lower() == 'reset':
-            AUV.tasks = ['test', 'fdsdfdsf']
+            AUV.set_config('tasks', '', True)
+        else:
+            print(AUV.tasks)
 
-        # TODO set tasks and reset tasks
         # TODO make a config file for default tasks
 
     # auto-complete tasks
@@ -127,6 +131,8 @@ class CLI(cmd.Cmd):
     def do_exit(self, arg):
         '\nExits auv'
 
+        print('Closing Robosub')
+
         return True
 
 
@@ -147,6 +153,7 @@ if __name__ == '__main__':
     AUV = AUV()  # initialize AUV() class
 
     print('\n***Plug in magnet after setting up configurations to start AUV.***')
+    print('\n***Set motor state to 1 to start motors.***')
 
     AUV.start()  # TESTING PURPOSES ONLY. REMOVE AFTER TESTING (simulates magnet killswitch = 1#############################################################
 

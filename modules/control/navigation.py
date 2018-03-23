@@ -1,7 +1,6 @@
 import rospy
 from std_msgs.msg import Float32
-from std_msgs.msg import Int32MultiArray
-from time import sleep
+from std_msgs.msg import Int8MultiArray
 
 
 class Navigation():
@@ -69,13 +68,13 @@ class Navigation():
     def pub_navigate(self, x, y, z, rotation):
         """ Private method used to publish given x, y, z, rotation"""
 
-        navigate = Int32MultiArray(data=[x, y, z])
-        pub_navigate = rospy.Publisher('navigation', Int32MultiArray, queue_size=10)
+        navigate = Int8MultiArray(data=[x, y, z])
+        pub_navigate = rospy.Publisher('navigation', Int8MultiArray, queue_size=10)
         pub_rotation = rospy.Publisher('rotation', Float32, queue_size=10)
 
         pub_navigate.publish(navigate)
         pub_rotation.publish(rotation)
-        sleep(.2)
+        rospy.sleep(.1)
 
         print('moving AUV to x=%d, y=%d, z=%d, rotation=%d' % (x, y, z, rotation))
 
