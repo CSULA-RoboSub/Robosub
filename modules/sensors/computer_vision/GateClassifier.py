@@ -1,6 +1,7 @@
 import cv2
 import glob
 import numpy as np
+import pandas as pd
 import utils as ut
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
@@ -21,36 +22,33 @@ class GateClassifier:
         self.gammaCorrection = 0
         self.nlevels = 64
         self.dims = (96, 144)
-        self.hog = None
+        self.hog = self.get_hog
         self.lsvm = None
         #print('classifier finished being built')
 
     '''note that the height and widths must be multiples of 8 in order to use a HOOG'''
     def get_hog(self):
-        if(self.hog == None):
-            self.hog = cv2.HOGDescriptor(
-                self.dims,
-                self.blockSize,
-                self.blockStride,
-                self.cellSize,
-                self.nbins,
-                self.derivAperture,
-                self.winSigma,
-                self.histogramNormType,
-                self.L2HysThreshold,
-                self.gammaCorrection,
-                self.nlevels
-            )
+        self.hog = cv2.HOGDescriptor(
+            self.dims,
+            self.blockSize,
+            self.blockStride,
+            self.cellSize,
+            self.nbins,
+            self.derivAperture,
+            self.winSigma,
+            self.histogramNormType,
+            self.L2HysThreshold,
+            self.gammaCorrection,
+            self.nlevels
+        )
         return self.hog
-
-    def compute_features(self, img):
-        self.get_hog().compute(img)
+            
 
     def get_features_with_label(self, img_data, label):
         data = []
         for img in img_data:
             img = cv2.resize(img, self.dims)
-            feat = self.compute_features(img[:, :, :3] )
+            feat = self.hog.compute(img[:, :, :3] )
             data.append((feat, label))
         return data
 
@@ -86,9 +84,9 @@ class GateClassifier:
 
             lsvm = SVC(kernel="linear", C = 1.0, probability=True, random_state=2)
 
-            lsvm.fit(train_feat, train_label)
+            lsvm.fit(feat_train, label_train)
 
-            result = lsvm.predict(test_feat)
+            result = lsvm.predict(feat_test)
 
         return lsvm
     '''
@@ -102,7 +100,7 @@ class GateClassifier:
             x, y, w, h = box
             window = frame[y:y + h, x:x + w, :]
             window_resized = cv2.resize(window, self.dims)
-            feat = self.compute_features(window_resized)
+            feat = self.hog.compute(window_resized)
             prob = self.get_lsvm.predict_proba( feat.reshape(1, -1) )[0]
             if prob[1] > .1 and prob[1] > max:
                 gate = box
