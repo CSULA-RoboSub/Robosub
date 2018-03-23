@@ -58,10 +58,10 @@ class GateClassifier:
         if(self.lsvm == None):
             pos_imgs = []
             neg_imgs = []
-            for img in glob.glob('pos_images/*.jpg'):
+            for img in glob.glob('data/positive/*.jpg'):
                 n = cv2.imread(img)
                 pos_imgs.append(n)
-            for img in glob.glob('neg_images/*.jpg'):
+            for img in glob.glob('data/negative/*.jpg'):
                 n = cv2.imread(img)
                 neg_imgs.append(n)
 
