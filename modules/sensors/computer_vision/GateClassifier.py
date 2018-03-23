@@ -53,40 +53,39 @@ class GateClassifier:
         return data
 
     def get_lsvm(self):
-        if(self.lsvm == None):
-            pos_imgs = []
-            neg_imgs = []
-            for img in glob.glob('data/gate/positive/*.jpg'):
-                n = cv2.imread(img)
-                pos_imgs.append(n)
-            for img in glob.glob('data/gate/negative/*.jpg'):
-                n = cv2.imread(img)
-                neg_imgs.append(n)
+        pos_imgs = []
+        neg_imgs = []
+        for img in glob.glob('data/gate/positive/*.jpg'):
+            n = cv2.imread(img)
+            pos_imgs.append(n)
+        for img in glob.glob('data/gate/negative/*.jpg'):
+            n = cv2.imread(img)
+            neg_imgs.append(n)
 
-            positive_data = self.get_features_with_label(pos_imgs, 1)
-            negative_data = self.get_features_with_label(neg_imgs, 0)
+        positive_data = self.get_features_with_label(pos_imgs, 1)
+        negative_data = self.get_features_with_label(neg_imgs, 0)
 
-            data = positive_data + negative_data
-            np.random.shuffle(data) # use np instead
+        data = positive_data + negative_data
+        np.random.shuffle(data) # use np instead
 
-            feat, labels = map(list, zip(*data) )
-            feat_flat = [x.flatten() for x in feat]
+        feat, labels = map(list, zip(*data) )
+        feat_flat = [x.flatten() for x in feat]
 
-            features_df = pd.DataFrame(feat_flat)
-            labels_df = pd.DataFrame(labels)
+        features_df = pd.DataFrame(feat_flat)
+        labels_df = pd.Series(labels)
 
-            feat_train, feat_test, label_train, label_test = train_test_split(
-                features_df,
-                labels_df,
-                test_size=0.3,
-                random_state=2
-            )
+        feat_train, feat_test, label_train, label_test = train_test_split(
+            features_df,
+            labels_df,
+            test_size=0.3,
+            random_state=2
+        )
 
-            lsvm = SVC(kernel="linear", C = 1.0, probability=True, random_state=2)
+        lsvm = SVC(kernel="linear", C = 1.0, probability=True, random_state=2)
 
-            lsvm.fit(feat_train, label_train)
+        lsvm.fit(feat_train, label_train)
 
-            result = lsvm.predict(feat_test)
+        result = lsvm.predict(feat_test)
 
         return lsvm
     '''
@@ -101,7 +100,7 @@ class GateClassifier:
             window = frame[y:y + h, x:x + w, :]
             window_resized = cv2.resize(window, self.dims)
             feat = self.hog.compute(window_resized)
-            prob = self.get_lsvm.predict_proba( feat.reshape(1, -1) )[0]
+            prob = self.lsvm.predict_proba( feat.reshape(1, -1) )[0]
             if prob[1] > .1 and prob[1] > max:
                 gate = box
         return gate
