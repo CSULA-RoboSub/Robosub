@@ -49,6 +49,6 @@ class GateDetector:
             self.directions = utils.get_directions(center, x, y ,w, h)
             self.found = True
 
-            self.out.write(frame)
+        self.out.write(frame)
         
         return self.found, self.directions
