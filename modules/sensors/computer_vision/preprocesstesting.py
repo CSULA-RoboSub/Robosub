@@ -97,6 +97,8 @@ while True:
     cv2.imshow('frame',frame)
     cv2.imshow('mask',mask)
     cv2.imshow('clone',clone)
+
+
     '''
     cv2.imshow('pimage', pimage)
     cv2.imshow('hsv_blur', hsv_blur)
