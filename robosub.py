@@ -60,7 +60,8 @@ class CLI(cmd.Cmd):
             print(AUV.tasks)
         elif arg.lower() == 'set':
             # TODO set tasks
-            AUV.set_config('tasks', '0 1 2 3 4 5 6 7 8')
+            # AUV.set_config('tasks', '0 1 2 3 4 5 6 7 8')
+            print('test')
         elif arg.lower() == 'reset':
             AUV.set_config('tasks', '', True)
         else:
@@ -104,6 +105,7 @@ class CLI(cmd.Cmd):
     # navigation #######################################################################################################
     def do_navigation(self, arg):
         '\n[cv] toggle computer vision task manager\
+         \n[keyboard] keyboard manual navigation\
          \n[x_value y_value z_value rotation_value]:\n\
          \nhorizontal x movement: negative = left, positive = right, 0 = no x movement\
          \nhorizontal y movement: negative = backwards, positive = forwards, 0 = no y movement\
@@ -113,14 +115,16 @@ class CLI(cmd.Cmd):
         if arg.lower() == 'cv' or arg.lower() == 'tm':
             # TODO cv taskmanager
             print(arg)
+        elif arg.lower() == 'keyboard' or arg.lower() == 'kb':
+            AUV.keyboard_nav()
         elif len(arg.split()) == 4:
             AUV.navigation.navigate(*parse(arg))
         else:
-            print('Not a valid argument')
+            print('Not a valid navigation argument')
 
     # auto-complete navigation
-    def complete_navigations(self, text, line, start_index, end_index):
-        args = ['cv']
+    def complete_navigation(self, text, line, start_index, end_index):
+        args = ['cv', 'keyboard']
 
         if text:
             return [arg for arg in args if arg.startswith(text)]

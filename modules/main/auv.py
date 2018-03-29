@@ -6,6 +6,7 @@ from std_msgs.msg import Int8
 # from test import test_movement
 from modules.control.motor import Motor
 from modules.control.navigation import Navigation
+from modules.control.keyboard import Keyboard
 
 
 class AUV():
@@ -30,6 +31,7 @@ class AUV():
         # self.test
         self.motor = Motor(self.motor_state)  # initialize Motor() class
         self.navigation = Navigation()  # initialize Navigation() class
+        self.keyboard = Keyboard()  # initialize Keyboard() class
         # TODO self.cv = CV() # initialize CV() class
 
     def get_config(self):
@@ -83,14 +85,22 @@ class AUV():
         with open(config_file_path, 'wb') as configfile:
             config.write(configfile)
 
+    def keyboard_nav(self):
+        """Navigate the robosub using keyboard controls"""
+
+        self.keyboard.getch()
+
     def start(self):
         """Starts the modules when magnet killswitch is plugged in"""
 
         self.motor.start()
         self.navigation.start()
+        self.keyboard.start()
         # self.cv.start(self.tasks)
 
     def stop(self):
         """Stops the modules when magnet killswitch is removed"""
 
         self.motor.stop()
+        self.navigation.stop()
+        self.keyboard.stop()

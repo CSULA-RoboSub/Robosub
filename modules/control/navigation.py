@@ -79,13 +79,13 @@ class Navigation():
         print('moving AUV to x=%d, y=%d, z=%d, rotation=%d' % (x, y, z, rotation))
 
     def start(self):
-        """Starts direction with set preferences when killswitch is plugged in"""
+        """Starts navigation with set preferences when killswitch is plugged in"""
 
         self.is_killswitch_on = True
         self.submerge(-5)
         # TODO set default submerge value as config file
 
     def stop(self):
-        """Stops direction when killswitch is unplugged"""
+        """Stops navigation when killswitch is unplugged"""
 
         self.is_killswitch_on = False
