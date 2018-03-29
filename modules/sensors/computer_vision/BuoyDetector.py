@@ -33,8 +33,10 @@ class BuoyDetector:
         center = (width / 2, height / 2)
         regions_of_interest = self.preprocess.get_interest_regions(frame)
 
+        '''
         for x, y, w, h in regions_of_interest:
             cv2.rectangle(frame, (x,y), (x+w, y+h), utils.colors["red"], 2)
+        '''
         #clone = frame.copy()
 
         #cv2.imshow('frame',frame)

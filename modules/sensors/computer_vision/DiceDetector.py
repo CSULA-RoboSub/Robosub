@@ -15,8 +15,8 @@ class DiceDetector:
     '''
     def __init__(self, cam):
         self.cap = cv2.VideoCapture(cam)
-        self.pp = dpp.dice_preprocess()
-        self.classifier = dc.dice_classifier()
+        self.pp = dpp.DicePreprocessor()
+        self.classifier = dc.DiceClassifier()
         self.directions = [None, None]
         self.dot_size = 100
 
