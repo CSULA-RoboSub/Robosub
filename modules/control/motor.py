@@ -1,12 +1,11 @@
 import rospy
-from std_msgs.msg import Int32
-from time import sleep
+from std_msgs.msg import Int8
 
 
 class Motor():
     """Controls motors"""
 
-    def __init__(self, state=1):
+    def __init__(self, state=0):
         self.is_killswitch_on = False
 
         self.state = state
@@ -14,7 +13,7 @@ class Motor():
         def callback(data):
             self.state = data.data
 
-        rospy.Subscriber('motor_state', Int32, callback)
+        rospy.Subscriber('motor_state', Int8, callback)
 
     def get_state(self):
         return self.state
@@ -39,10 +38,10 @@ class Motor():
     def pub_motor_state(self, state):
         """ Private method used to publish given motor state"""
 
-        pub = rospy.Publisher('motor_state', Int32, queue_size=10)
+        pub = rospy.Publisher('motor_state', Int8, queue_size=10)
 
         pub.publish(state)
-        sleep(.2)
+        rospy.sleep(.1)
 
         print('\nmotor state published %d' % state)
 
