@@ -74,15 +74,18 @@ class DiceClassifier:
         print "test accuracy ", lsvm.score(test_feat, test_label)
 
         return lsvm
+
     def classify(self,frame,roi): #roi = regions of interest
         die = None
         max = 0
+        true_dice = []
         for box in roi:
             x, y, w, h = box
             window = frame[y:y+h, x:x+w, :]
             window = cv2.resize(window, self.dims)
             feat = self.hog.compute(window)
             prob = self.lsvm.predict_proba(feat.reshape(1, -1))[0]
-            if prob[1] > .1 and prob[1] > max:
+            if prob[1] > .1 :
                 die = box
-        return die
+                true_dice.append(box)
+        return true_dice
