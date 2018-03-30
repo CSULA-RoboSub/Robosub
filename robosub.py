@@ -20,20 +20,9 @@ except ImportError:
         setup_ros.install()
 
     sys.exit()
-finally:
-    from std_msgs.msg import Int32
-
+else:
     """Import auv"""
     from modules.main.auv import AUV
-
-    # """Import test_movement"""
-    # from test import test_movement
-
-    # """Import motor"""
-    # from modules.control.motor import Motor
-
-    # """Import direction"""
-    # from modules.control.direction import Direction
 
 
 class CLI(cmd.Cmd):
@@ -47,8 +36,8 @@ class CLI(cmd.Cmd):
         '\n[movement] to test movement\
          \n[cv] to test cv direction finder'
 
-        if arg.lower() == 'movement':
-            test_movement.main()
+        # if arg.lower() == 'movement':
+        #     test_movement.main()
 
         # TODO finish test
 
@@ -69,10 +58,14 @@ class CLI(cmd.Cmd):
 
         if arg.lower() == 'view':
             print(AUV.tasks)
+        elif arg.lower() == 'set':
+            # TODO set tasks
+            AUV.set_config('tasks', '0 1 2 3 4 5 6 7 8')
         elif arg.lower() == 'reset':
-            AUV.tasks = ['test', 'fdsdfdsf']
+            AUV.set_config('tasks', '', True)
+        else:
+            print(AUV.tasks)
 
-        # TODO set tasks and reset tasks
         # TODO make a config file for default tasks
 
     # auto-complete tasks
@@ -108,19 +101,25 @@ class CLI(cmd.Cmd):
         else:
             return args
 
-    # direction ########################################################################################################
-    def do_direction(self, arg):
-        '\n[cv] toogle computer vision direction finder\
-         \n[rotation# vertical#] negative# = left/down, positive# = right/up'
+    # navigation #######################################################################################################
+    def do_navigation(self, arg):
+        '\n[cv] toggle computer vision task manager\
+         \n[x_value y_value z_value rotation_value]:\n\
+         \nhorizontal x movement: negative = left, positive = right, 0 = no x movement\
+         \nhorizontal y movement: negative = backwards, positive = forwards, 0 = no y movement\
+         \nvertical movement: negative = down, positive = up, 0 = no vertical movement\
+         \nrotation: negative = left, positive = right, 0 = no rotation'
 
-        if arg.lower() == 'cv':
+        if arg.lower() == 'cv' or arg.lower() == 'tm':
+            # TODO cv taskmanager
             print(arg)
-        elif len(arg.split()) == 2:
-            AUV.direction.set_direction(*parse(arg))
-            AUV.direction.point_direction()
+        elif len(arg.split()) == 4:
+            AUV.navigation.navigate(*parse(arg))
+        else:
+            print('Not a valid argument')
 
-    # auto-complete direction
-    def complete_direction(self, text, line, start_index, end_index):
+    # auto-complete navigation
+    def complete_navigations(self, text, line, start_index, end_index):
         args = ['cv']
 
         if text:
@@ -132,20 +131,14 @@ class CLI(cmd.Cmd):
     def do_exit(self, arg):
         '\nExits auv'
 
+        print('Closing Robosub')
+
         return True
 
 
 def parse(arg):
     'Convert a series of zero or more numbers to an argument tuple'
     return tuple(map(int, arg.split()))
-
-
-def callback(data):
-    # print(data.data)
-    if data.data == 1:
-        AUV.start()
-    if data.data == 0:
-        AUV.stop()
 
 
 if __name__ == '__main__':
@@ -157,14 +150,14 @@ if __name__ == '__main__':
     roscore = subprocess.Popen('roscore')
     time.sleep(1)
 
-    rospy.init_node('AUV', anonymous=True)  # initialize AUV rosnode
     AUV = AUV()  # initialize AUV() class
 
     print('\n***Plug in magnet after setting up configurations to start AUV.***')
+    print('\n***Set motor state to 1 to start motors.***')
+
+    AUV.start()  # TESTING PURPOSES ONLY. REMOVE AFTER TESTING (simulates magnet killswitch = 1#############################################################
 
     CLI().cmdloop()  # run AUV command interpreter
-
-    rospy.Subscriber('kill_switch', Int32, callback)  # Subscriber for magnet kill switch
 
     # close roscore and rosmaster on exit
     subprocess.Popen.kill(roscore)

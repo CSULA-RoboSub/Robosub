@@ -1,6 +1,5 @@
 import rospy
-from std_msgs.msg import Int32
-from time import sleep
+from std_msgs.msg import Int8
 
 
 class Motor():
@@ -14,7 +13,7 @@ class Motor():
         def callback(data):
             self.state = data.data
 
-        rospy.Subscriber('motor_state', Int32, callback)
+        rospy.Subscriber('motor_state', Int8, callback)
 
     def get_state(self):
         return self.state
@@ -33,35 +32,29 @@ class Motor():
 
         print('\nmotor state set to %d' % self.state)
 
-    def move(self, y):
-        """Propel AUV forward or backwards with given y value
-        positive = forwards, negative = backwards
-        """
-
         if self.is_killswitch_on:
-            pub = rospy.Publisher('move', Int32, queue_size=10)
+            self.pub_motor_state(self.state)
 
-            pub.publish(y)
-            sleep(.2)
+    def pub_motor_state(self, state):
+        """ Private method used to publish given motor state"""
+
+        pub = rospy.Publisher('motor_state', Int8, queue_size=10)
+
+        pub.publish(state)
+        rospy.sleep(.1)
+
+        print('\nmotor state published %d' % state)
 
     def start(self):
         """Starts motors with set preferences when killswitch is plugged in"""
 
         self.is_killswitch_on = True
 
-        pub = rospy.Publisher('motor_state', Int32, queue_size=10)
-
-        pub.publish(self.state)
-        sleep(.2)
-
-        print('\nmotor state published %d' % self.state)
+        self.pub_motor_state(self.state)
 
     def stop(self):
         """Stops motors when killswitch is unplugged"""
 
         self.is_killswitch_on = False
 
-        pub = rospy.Publisher('motor_state', Int32, queue_size=10)
-
-        pub.publish(0)
-        sleep(.2)
+        self.pub_motor_state(0)

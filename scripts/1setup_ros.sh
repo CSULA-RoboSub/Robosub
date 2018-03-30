@@ -4,7 +4,7 @@ sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C
 
 sudo apt-get update
 
-sudo apt-get install ros-lunar-desktop-full
+sudo apt-get -y install ros-lunar-desktop-full
 
 apt-cache search ros-lunar
 
@@ -14,6 +14,6 @@ rosdep update
 echo "source /opt/ros/lunar/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 
-sudo apt-get install python-rosinstall python-rosinstall-generator python-wstool build-essential
+sudo apt-get -y install python-rosinstall python-rosinstall-generator python-wstool build-essential
 
-sudo apt-get install ros-lunar-ros-tutorials
+sudo apt-get -y install ros-lunar-ros-tutorials
