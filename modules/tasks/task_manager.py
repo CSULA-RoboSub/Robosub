@@ -64,7 +64,7 @@ class TaskManager:
 
         print("detect_gate")
         found, gate_coordinates = self.detectgate.detect()
-        if (gate_coordinates[0] == 0 && gate_coordinates[1] == 0):
+        if (gate_coordinates[0] == 0 and gate_coordinates[1] == 0):
             global gate_found
             gate_found = True
         return found, gate_coordinates
@@ -74,7 +74,7 @@ class TaskManager:
         
         print("detect_dice")
         found, dice_coordinates = self.detectdice.detect()
-        if (dice_coordinates[0] == 0 && dice_coordinates[1] == 0):
+        if (dice_coordinates[0] == 0 and dice_coordinates[1] == 0):
             global dice_found
             dice_found = True
             dice_pair = self.dicedetector.getSum()
@@ -85,7 +85,7 @@ class TaskManager:
 
         print("detect_roulette")
         found, roulette_coordinates = self.detectroulette.detect()
-        if (roulette_coordinates[0] == 0 && roulette_coordinates[1] == 0):
+        if (roulette_coordinates[0] == 0 and roulette_coordinates[1] == 0):
             global roulette_found
             roulette_found = True
         return found, roulette_coordinates
@@ -95,7 +95,7 @@ class TaskManager:
 
         print("detect_cash_in")
         found, cash_in_coordinates = self.detectcashin.detect()
-        if (cash_in_coordinates[0] == 0 && cash_in_coordinates[1] == 0):
+        if (cash_in_coordinates[0] == 0 and cash_in_coordinates[1] == 0):
             global cash_in_found
             cash_in_found = True
         return found, cash_in_coordinates
@@ -116,23 +116,27 @@ class TaskManager:
         global gate_circle_loc
         global gate_done
 
-        if (gate_circle_loc < 2*math.pie):
+        """ to increase the radius of the circle of the sub, we must divide """
+        """ by a larger number. multiplying by a radius is not applicable """
+        """ since we are only moving by -1, 0 and 1 """
+        
+        if (gate_circle_loc < 2*math.pi):
             gate_circle_loc += math.pi/100
-            x = math.sin(circle_loc)
-            y = math.cos(circle_loc)
+            x = math.sin(gate_circle_loc)
+            y = math.cos(gate_circle_loc)
             lower_bound = -.33
             upper_bound = .33
 
             if (x >= upper_bound):
                 coord_x = 1
-            elif (x < upper_bound && x >= lower_bound):
+            elif (x < upper_bound and x >= lower_bound):
                 coord_x = 0
             elif (x < lower_bound):
                 coord_x = -1
 
             if (y >= upper_bound):
                 coord_y = 1
-            elif (y < upper_bound && y >= lower_bound):
+            elif (y < upper_bound and y >= lower_bound):
                 coord_y = 0
             elif (y < lower_bound):
                 coord_y = -1
@@ -149,9 +153,9 @@ class TaskManager:
     def complete_dice(self):
         """ Will run to complte the dice task. """
         """ Will need to touch 2 dices that add up to 7 or 11 """
-        if (!complete_first_die):
+        if not complete_first_die:
             found, dice_direction = self.dicedetector.find_die(dice_pair[0])
-        elseif (complete_first_die && !complete_second_die):
+        elseif (complete_first_die and not complete_second_die):
             found, dice_direction = self.dicedetector.find_die(dice_pair[1])
         return found, dice_direction
 
@@ -225,15 +229,15 @@ def talker():
         if (userinput == 'buoy'):
             msg.found, coords = tm.detect_buoy()
         elif (userinput == 'dice'):
-            if (!dice_found):
+            if not dice_found:
                 msg.found, coords = tm.detect_dice()
             else:
                 msg.found, coords = tm.complete_dice()
         elif (userinput == 'gate'):
-            if (!gate_found):
+            if not gate_found:
                 msg.found, coords = tm.detect_gate()
             else:
-                if (!gate_done):
+                if not gate_done:
                     msg.found, coords = tm.complete_gate()
                 else:
                     rospy.on_shutdown(close)
