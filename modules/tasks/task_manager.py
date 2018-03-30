@@ -37,6 +37,7 @@
 ## to the 'chatter' topic
 
 import rospy
+import math
 from auv_cal_state_la_2017.msg import CVIn
 from auv_cal_state_la_2017.msg import CVOut
 
@@ -112,7 +113,34 @@ class TaskManager:
 
     def complete_gate(self):
         """ Will run to complete the gate task. """
-        pass
+        global gate_circle_loc
+        global gate_done
+
+        if (gate_circle_loc < 2*math.pie):
+            gate_circle_loc += math.pi/100
+            x = math.sin(circle_loc)
+            y = math.cos(circle_loc)
+            lower_bound = -.33
+            upper_bound = .33
+
+            if (x >= upper_bound):
+                coord_x = 1
+            elif (x < upper_bound && x >= lower_bound):
+                coord_x = 0
+            elif (x < lower_bound):
+                coord_x = -1
+
+            if (y >= upper_bound):
+                coord_y = 1
+            elif (y < upper_bound && y >= lower_bound):
+                coord_y = 0
+            elif (y < lower_bound):
+                coord_y = -1
+        else:
+            gate_done = True
+            print('circling gate completed')
+        
+        return True, [coord_x, coord_y]
 
     def complete_buoy(self):
         """ Will run to complete the buoy task """
@@ -184,6 +212,8 @@ def talker():
     roulette_found = False
     cash_in_found = False
 
+    gate_circle_loc = 0
+
     gate_done = False
     dice_done = False
     roulette_done = False
@@ -198,9 +228,15 @@ def talker():
             if (!dice_found):
                 msg.found, coords = tm.detect_dice()
             else:
-                msg.found,coords = tm.complete_dice()
+                msg.found, coords = tm.complete_dice()
         elif (userinput == 'gate'):
-            msg.found, coords = tm.detect_gate()
+            if (!gate_found):
+                msg.found, coords = tm.detect_gate()
+            else:
+                if (!gate_done):
+                    msg.found, coords = tm.complete_gate()
+                else:
+                    rospy.on_shutdown(close)
         else:
             print('incorrect user input, please try again')
             rospy.on_shutdown(close)
