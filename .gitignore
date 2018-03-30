@@ -108,3 +108,13 @@ bin/
 include/
 pip-selfcheck.json
 
+config/config.ini
+
+# CV photos
+
+modules/sensors/computer_vision/dice_false_pos/
+modules/sensors/computer_vision/dice_test_data/
+modules/sensors/computer_vision/neg_images/
+modules/sensors/computer_vision/pos_dice/
+modules/sensors/computer_vision/pos_images
+modules/sensors/computer_vision/temp_negs
