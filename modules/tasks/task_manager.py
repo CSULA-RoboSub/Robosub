@@ -155,7 +155,7 @@ class TaskManager:
         """ Will need to touch 2 dices that add up to 7 or 11 """
         if not complete_first_die:
             found, dice_direction = self.dicedetector.find_die(dice_pair[0])
-        elseif (complete_first_die and not complete_second_die):
+        elif (complete_first_die and not complete_second_die):
             found, dice_direction = self.dicedetector.find_die(dice_pair[1])
         return found, dice_direction
 
