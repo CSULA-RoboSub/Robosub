@@ -41,7 +41,7 @@ class GatePreprocessor:
         
         im, contours, ret = cv2.findContours(binary_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-        filtered_contours = filter_contours(contours)
+        filtered_contours = self.filter_contours(contours)
         
         boxes = [cv2.boundingRect(c) for c in filtered_contours]
         
