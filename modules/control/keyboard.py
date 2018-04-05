@@ -59,7 +59,7 @@ class Keyboard():
 
                     print('power is changed to %s' % power)
                 elif char == 'c':
-                    while not response.isdigit():
+                    while not response.isdigit() or int(response) < 0 or int(response) > 400:
                         response = raw_input('\nEnter a custom power value [0-400]: ')
 
                     power = response
