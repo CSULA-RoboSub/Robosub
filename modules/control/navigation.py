@@ -35,7 +35,12 @@ class Navigation():
         self.rotation = rotation
 
     def navigate(self, power, direction, rotation):
-        """Start navigation with given power and direction or rotational values."""
+        """
+        Start navigation with given power and direction or rotational values.
+        power: 0 to 400
+        direction: none, forward, right, backward, left, up, down
+        rotation: -180.0 to 180.0
+        """
 
         if self.is_killswitch_on:
 

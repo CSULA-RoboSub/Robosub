@@ -1,4 +1,5 @@
 from misc.getch import _Getch
+from modules.control.navigation import Navigation
 
 
 class Keyboard():
@@ -12,12 +13,14 @@ class Keyboard():
     r: up
     f: down
     [0-9]: power
-    m: muliplier
+    c: custom power
     x: exit
     """
 
     def __init__(self):
         self.is_killswitch_on = False
+        self.multiplier = 40
+        self.navigation = Navigation()
 
     def getch(self):
         """Gets keyboard input if killswitch is plugged in"""
@@ -26,8 +29,7 @@ class Keyboard():
         accepted = ['w', 'a', 's', 'd', 'q', 'e', 'r', 'f']
         response = ''
         char = 0
-        power = 1
-        multiplier = 1
+        power = self.multiplier
 
         if self.is_killswitch_on:
             print(
@@ -41,54 +43,60 @@ class Keyboard():
                 \nr: up\
                 \nf: down\
                 \n[0-9]: power\
-                \nm: muliplier\
+                \nc: custom power\
                 \nx: exit')
 
             while char != 'x':
                 char = getch()
 
                 if char in accepted:
-                    self.navigate(char, power, multiplier)
+                    self.navigate(char, power)
                 elif char.isdigit():
-                    power = char
-                    print('power is changed to %s' % power)
-                elif char == 'm':
-                    while not response.isdigit():
-                        response = raw_input('\nEnter a number for multiplier: ')
+                    if char == '0':
+                        power = int(10) * self.multiplier
+                    else:
+                        power = int(char) * self.multiplier
 
-                    multiplier = response
+                    print('power is changed to %s' % power)
+                elif char == 'c':
+                    while not response.isdigit():
+                        response = raw_input('\nEnter a custom power value [0-400]: ')
+
+                    power = response
                     response = ''
-                    print('multiplier is changed to %s' % multiplier)
+                    print('power is changed to %s' % power)
 
         else:
             print('Magnet is not plugged in.')
 
-    def navigate(self, char, power, multiplier):
-        """Navigates robosub with given character input, power, and multiplier"""
+    def navigate(self, char, power):
+        """Navigates robosub with given character input and power"""
 
         if char == 'w':
-            print('forwards')
+            self.navigation.navigate(power, 'forward', 0.0)
         elif char == 'a':
-            print('counter-clockwise')
+            self.navigation.navigate(power, 'none', -10.0)
         elif char == 's':
-            print('backwards')
+            self.navigation.navigate(power, 'backward', 0.0)
         elif char == 'd':
-            print('clockwise')
+            self.navigation.navigate(power, 'none', 10.0)
         elif char == 'q':
-            print('left')
+            self.navigation.navigate(power, 'left', 0.0)
         elif char == 'e':
-            print('right')
+            self.navigation.navigate(power, 'right', 0.0)
         elif char == 'r':
-            print('up')
+            self.navigation.navigate(power, 'up', 0.0)
         elif char == 'f':
-            print('down')
+            self.navigation.navigate(power, 'down', 0.0)
 
     def start(self):
         """Allows keyboard navigation when killswitch is plugged in"""
 
         self.is_killswitch_on = True
+        self.navigation.start()
 
     def stop(self):
         """Stops keyboard navigation when killswitch is unplugged"""
 
         self.is_killswitch_on = False
+        self.navigation.stop()
