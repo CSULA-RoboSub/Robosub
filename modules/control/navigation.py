@@ -1,88 +1,95 @@
 import rospy
-from std_msgs.msg import Float32
-from std_msgs.msg import Int8MultiArray
+from robosub.msg import Navigate
 
 
 class Navigation():
-    """Controls thrusters to move or point AUV to a certain direction given x, y, z, or rotational values
-    horizontal x movement: negative = left, positive = right, 0 = no x movement
-    horizontal y movement: negative = backwards, positive = forwards, 0 = no y movement
-    vertical movement: negative = down, positive = up, 0 = no vertical movement
-    rotation: negative = left, positive = right, 0 = no rotation
-    """
+    """Controls thrusters to move or point AUV to a certain direction given power and direction or rotational values"""
 
-    def __init__(self, x=0, y=0, z=0, rotation=0.0):
+    def __init__(self, power=0, direction='none', rotation=0.0):
         self.is_killswitch_on = False
 
-        # horizontal x movement: negative = left, positive = right, 0 = no  x movement
-        self.x = x
+        self.directions = {
+            'none': 0,
+            'forward': 1,
+            'right': 2,
+            'backward': 3,
+            'left': 4,
+            'up': 5,
+            'down': 6
+        }
 
-        # horizontal y movement: negative = backwards, positive = forwards, 0 = no y movement
-        self.y = y
+        self.power = power
+        self.direction = direction
+        self.rotation = rotation
+        # TODO check if submerged
 
-        # vertical movement: negative = down, positive = up, 0 = no vertical movement
-        self.z = z
+    def set_navigation(self, power=0, direction='none', rotation=0.0):
+        """
+        power: 0 to 400
+        direction: none, forward, right, backward, left, up, down
+        rotation: -180.0 to 180.0
+        """
 
-        # rotation: negative = left, positive = right, 0 = no rotation
+        self.power = power
+        self.direction = direction
         self.rotation = rotation
 
-    def set_navigation(self, x=0, y=0, z=0, rotation=0.0):
-        """
-        horizontal x movement: negative = left, positive = right, 0 = no x movement
-        horizontal y movement: negative = backwards, positive = forwards, 0 = no y movement
-        vertical movement: negative = down, positive = up, 0 = no vertical movement
-        rotation: negative = left, positive = right, 0 = no rotation
-        """
-
-        self.x = x
-        self.y = y
-        self.z = z
-        self.rotation = rotation
-
-    def navigate(self, x, y, z, rotation):
-        """ Start navigation with given x, y, z, rotation values."""
+    def navigate(self, power, direction, rotation):
+        """Start navigation with given power and direction or rotational values."""
 
         if self.is_killswitch_on:
 
-            if x is not None or y is not None or z is not None or rotation is not None:
-                self.set_navigation(x, y, z, rotation)
+            if power is not None or direction is not None or rotation is not None:
+                self.set_navigation(power, direction, rotation)
 
-            self.pub_navigate(self.x, self.y, self.z, self.rotation)
+            self.pub_navigate(self.power, self.direction, self.rotation)
 
-    def submerge(self, z):
+    def submerge(self, power):
         """ Set the level the sub should submerge to """
 
         if self.is_killswitch_on:
 
             print('submerging AUV')
-            self.pub_navigate(0, 0, z, 0.0)
+            self.pub_navigate(power, 'down', 0.0)
 
     def brake(self):
-        """ Stops the AUV and propels it the opposite y value to stop momentum"""
+        """ Stops the AUV and propels it the opposite direction to stop momentum"""
 
         if self.is_killswitch_on:
 
+            opposite_direction = {
+                'none': 'none',
+                'forward': 'backward',
+                'right': 'left',
+                'backward': 'forward',
+                'left': 'right',
+                'up': 'down',
+                'down': 'up'
+            }
+
             print('braking AUV')
-            self.pub_navigate(0, -self.y, 0, 0.0)
+            self.pub_navigate(self.power, opposite_direction[self.direction], -self.rotation)
 
-    def pub_navigate(self, x, y, z, rotation):
-        """ Private method used to publish given x, y, z, rotation"""
+    def pub_navigate(self, power, direction, rotation):
+        """ Private method used to publish given power, direction, and rotation"""
 
-        navigate = Int8MultiArray(data=[x, y, z])
-        pub_navigate = rospy.Publisher('navigation', Int8MultiArray, queue_size=10)
-        pub_rotation = rospy.Publisher('rotation', Float32, queue_size=10)
+        pub_navigate = rospy.Publisher('navigation', Navigation)
+
+        navigate = Navigate()
+        navigate.power = power
+        navigate.direction = self.directions[direction]
+        navigate.rotation = rotation
 
         pub_navigate.publish(navigate)
-        pub_rotation.publish(rotation)
         rospy.sleep(.1)
 
-        print('moving AUV to x=%d, y=%d, z=%d, rotation=%d' % (x, y, z, rotation))
+        print('moving AUV power=%s, direction=%s, rotation=%d' % (power, direction, rotation))
 
     def start(self):
         """Starts navigation with set preferences when killswitch is plugged in"""
 
         self.is_killswitch_on = True
-        self.submerge(-5)
+        self.submerge(10)
         # TODO set default submerge value as config file
 
     def stop(self):
