@@ -11,8 +11,8 @@ class GateDetector:
         self.found =  False;
         self.cap = cv2.VideoCapture(0)
         self.preprocess = gp.GatePreprocessor()
-        self.hog = self.classifier.get_hog() # why - to init? should init in class...
-        self.lsvm = self.classifier.get_lsvm() # why - same?
+        #self.hog = self.classifier.get_hog() # why - to init? should init in class...
+        #self.lsvm = self.classifier.get_lsvm() # why - same?
         self.lower = [40,60,60]
         self.upper = [60,255,255]
         self.directions = [0,0]

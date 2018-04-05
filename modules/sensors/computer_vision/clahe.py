@@ -3,8 +3,9 @@ import cv2
 import utils
 import math
 import DiceClassifier as DC
-frame = cv2.imread('dice_test_data/dice1521499707100.jpg')
-frame = cv2.imread('dice_test_data/dice1521499311440.jpg')
+#frame = cv2.imread('dice_test_data/dice1521499707100.jpg')
+#frame = cv2.imread('dice_test_data/dice1521499311440.jpg')
+frame = cv2.imread('gate.jpg')
 classifier = DC.DiceClassifier()
 lab = cv2.cvtColor(frame, cv2.COLOR_RGB2LAB)
 
@@ -33,7 +34,7 @@ print len(grois),'grois'
 '''
 for x, y, w, h in rois:
     cv2.rectangle(final, (x, y), (x+w, y+h), utils.colors["blue"], 1)
-'''
+
 for x, y, w, h in grois:
     cv2.rectangle(final, (x, y), (x+w, y+h), utils.colors["red"], 1)
 dice = classifier.classify(frame,grois)
@@ -42,15 +43,15 @@ print len(dice)
 
 for x, y, w, h in dice:
     cv2.rectangle(final, (x, y), (x+w, y+h), utils.colors["magenta"], 2)
-
+'''
 while True:
 
-    #cv2.imshow('basic_edges',cv2.Canny(frame,100,200))
-    #cv2.imshow('edges',edges)
-    #cv2.imshow('gedges',gedges)
-    #cv2.imshow('gray',gray)
+    cv2.imshow('basic_edges',cv2.Canny(frame,100,200))
+    cv2.imshow('edges',edges)
+    cv2.imshow('gedges',gedges)
+    cv2.imshow('gray',gray)
     cv2.imshow('final',final)
-    #cv2.imshow('blurred',blurred)
+    cv2.imshow('blurred',blurred)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 cv2.destroyAllWindows()

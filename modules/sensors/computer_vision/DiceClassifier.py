@@ -66,7 +66,7 @@ class DiceClassifier:
         test_feat = np.array(feat[train_size: sample_size], np.float32)
         train_label = np.array(labels[:train_size])
         test_label = np.array(labels[train_size:sample_size])
-        lsvm = svm.SVC(gamma=5, C=.12, kernel="linear", probability=True)
+        lsvm = svm.SVC(gamma=5, C= .5 , kernel="linear", probability=True)
         lsvm.fit(train_feat, train_label)
 
         print lsvm.score(train_feat, train_label)
