@@ -204,7 +204,7 @@ def talker():
     #     r.sleep()
     """ Added just to test other methods. """
     """ Will only loop one specific task until shutdown. """
-    userinput = input('enter task to run...(buoy, dice, gate are only options for now)')
+    userinput = raw_input('enter task to run...(buoy, dice, gate are only options for now)')
     
     pub = rospy.Publisher('cv_to_master', CVIn)
     rospy.init_node('cv_talker', anonymous=True)
