@@ -83,12 +83,14 @@ class TaskManager:
             self.detectdice = DiceDetector.DiceDetector()
             self.dice_int = True
 
-        found, dice_coordinates = self.detectdice.detect()
+        '''found, dice_coordinates = self.detectdice.detect()
         if (dice_coordinates[0] == 0 and dice_coordinates[1] == 0):
             global dice_found
             dice_found = True
             dice_pair = self.dicedetector.getSum()
-        return found, dice_coordinates
+        return found, dice_coordinates'''
+
+        found = self.detectdice.locate_dice()
 
     def detect_roulette(self):
         """ When roulette_detect task is called. """
