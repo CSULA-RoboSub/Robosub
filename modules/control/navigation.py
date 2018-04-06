@@ -1,5 +1,5 @@
 import rospy
-# from msg import Navigate
+from auv2018.msg import Navigate
 
 
 class Navigation():
@@ -78,15 +78,15 @@ class Navigation():
     def pub_navigate(self, power, direction, rotation):
         """ Private method used to publish given power, direction, and rotation"""
 
-        # pub_navigate = rospy.Publisher('navigation', Navigation)
+        pub_navigate = rospy.Publisher('navigation', Navigate, queue_size=10)
 
-        # navigate = Navigate()
-        # navigate.power = power
-        # navigate.direction = self.directions[direction]
-        # navigate.rotation = rotation
+        navigate = Navigate()
+        navigate.power = power
+        navigate.direction = self.directions[direction]
+        navigate.rotation = rotation
 
-        # pub_navigate.publish(navigate)
-        # rospy.sleep(.1)
+        pub_navigate.publish(navigate)
+        rospy.sleep(.1)
 
         print('moving AUV power=%s, direction=%s, rotation=%d' % (power, direction, rotation))
 
