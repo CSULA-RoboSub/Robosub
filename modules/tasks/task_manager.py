@@ -37,12 +37,12 @@
 ## to the 'chatter' topic
 
 import rospy
-import math
 from auv_cal_state_la_2017.msg import CVIn
 from auv_cal_state_la_2017.msg import CVOut
 
 import BuoyDetector
 import DiceDetector
+import GateDetector
 #from modules.control.navigation import Navigation
 
 class TaskManager:
@@ -52,10 +52,11 @@ class TaskManager:
         """ To initialize the TaskManger. """
 
         self.coordinates = []
-        self.detectbuoy = BuoyDetector.BuoyDetector()
-        self.detectdice = DiceDetector.DiceDetector()
-
         self.dice_pair = []
+        
+        self.gate_ins = False
+        self.buoy_ins = False
+        self.dice_ins = False
         self.complete_first_die = False
         self.complete_second_die = False
 
@@ -63,16 +64,25 @@ class TaskManager:
         """ When gate_detect task is called. """
 
         print("detect_gate")
+        if not self.gate_ins:
+            self.detectgate = GateDetector.GateDetector()
+            self.gate_ins = True
+
         found, gate_coordinates = self.detectgate.detect()
         if (gate_coordinates[0] == 0 and gate_coordinates[1] == 0):
             global gate_found
             gate_found = True
         return found, gate_coordinates
 
+
     def detect_dice(self):
-        """When detect_dice task is called. """
+        """ When dice_detect task is called. """
         
         print("detect_dice")
+        if not self.dice_ins:
+            self.detectdice = DiceDetector.DiceDetector()
+            self.dice_int = True
+
         found, dice_coordinates = self.detectdice.detect()
         if (dice_coordinates[0] == 0 and dice_coordinates[1] == 0):
             global dice_found
@@ -94,6 +104,7 @@ class TaskManager:
         """ When cash_in_detect task is called. """
 
         print("detect_cash_in")
+        print("detect_cash_in")
         found, cash_in_coordinates = self.detectcashin.detect()
         if (cash_in_coordinates[0] == 0 and cash_in_coordinates[1] == 0):
             global cash_in_found
@@ -108,6 +119,10 @@ class TaskManager:
         """ The proceed to coordinates """
 
         print("detect_buoy")
+        if not self.buoy_ins:
+            self.detectbuoy = BuoyDetector.BuoyDetector()
+            self.buoy_ins = True
+
         found, buoy_coordinates = self.detectbuoy.detect()
         return found, buoy_coordinates
 
@@ -202,10 +217,14 @@ def talker():
     #     rospy.loginfo(msg)
     #     pub.publish(msg)
     #     r.sleep()
+
+    def close():
+        print('ros is shutting down')
+
     """ Added just to test other methods. """
     """ Will only loop one specific task until shutdown. """
     userinput = raw_input('enter task to run...(buoy, dice, gate are only options for now)')
-    
+
     pub = rospy.Publisher('cv_to_master', CVIn)
     rospy.init_node('cv_talker', anonymous=True)
     r = rospy.Rate(30) #30hz
@@ -224,6 +243,7 @@ def talker():
     cash_in_done = False
 
     while not rospy.is_shutdown():
+    #   msg.found, coords = tm.detect_buoy()
     # task manager will need to get task from auv(houston)"""
     # which will be give to houston by the task queue """
         if (userinput == 'buoy'):
@@ -244,6 +264,7 @@ def talker():
         else:
             print('incorrect user input, please try again')
             rospy.on_shutdown(close)
+            break
         msg.horizontal = coords[0]
         msg.vertical = coords[1]
         msg.distance = 1.25
@@ -258,9 +279,6 @@ if __name__ == '__main__':
         talker()
     except rospy.ROSInterruptException: 
         pass
-
-def close():
-    print('ros is shutting down')
 
 def taskcompleted():
     pass
