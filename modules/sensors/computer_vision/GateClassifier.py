@@ -10,37 +10,24 @@ import Classifier
 class GateClassifier:
 
     def __init__(self):
-        self.minDim = 80
-        self.blockSize = (16, 16)
-        self.blockStride = (8, 8)
-        self.cellSize = (8, 8)
-        self.nbins = 9
-        self.derivAperture = 1
-        self.winSigma = -1
-        self.histogramNormType = 0
-        self.L2HysThreshold = 2.1e-1
-        self.gammaCorrection = 0
-        self.nlevels = 64
-        self.dims = (96, 144)
-        self.hog = None
-        self.lsvm = None
-        #print('classifier finished being built')
+        self.min_dim = 80
+        self.block_size = (16, 16)
+        self.block_stride = (8, 8)
+        self.cell_size = (8, 8)
+        self.bins = 9
+        self.dims = (80, 80)
+        self.hog = None # init in first-time method call
+        self.lsvm = None # init in first-time method call
 
-    '''note that the height and widths must be multiples of 8 in order to use a HOOG'''
+
     def get_hog(self):
-        if self.hog == None:
+        if (self.hog == None):
             self.hog = cv2.HOGDescriptor(
                 self.dims,
-                self.blockSize,
-                self.blockStride,
-                self.cellSize,
-                self.nbins,
-                self.derivAperture,
-                self.winSigma,
-                self.histogramNormType,
-                self.L2HysThreshold,
-                self.gammaCorrection,
-                self.nlevels
+                self.block_size,
+                self.block_stride,
+                self.cell_size,
+                self.bins,
             )
         return self.hog
             
@@ -54,7 +41,7 @@ class GateClassifier:
         return data
 
     def get_lsvm(self):
-        if self.lsvm == None:
+        if (self.lsvm == None):
             pos_imgs = []
             neg_imgs = []
             for img in glob.glob('data/gate/positive/*.jpg'):
@@ -85,9 +72,12 @@ class GateClassifier:
 
             self.lsvm = SVC(kernel="linear", C = 1.0, probability=True, random_state=2)
             self.lsvm.fit(feat_train, label_train)
-            result = self.lsvm.predict(feat_test)
+            
+            result = self.lsvm.predict(feat_test) # ?
 
         return self.lsvm
+
+    
     '''
         this returns the max value for the GATE, (x,y) as topleft corner
         then w,h and width and height respectively.
