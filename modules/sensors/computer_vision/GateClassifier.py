@@ -23,7 +23,10 @@ class GateClassifier:
             self.cell_size,
             self.bins
         )
-        self.lsvm = None # init in first-time method call
+        self.lsvm = None # inits in first-time method call
+        
+        self.positive_image_path = "data/gate/positive/*.jpg" # maybe add different file formats??
+        self.negative_image_path = "data/gate/negative/*.jpg"
             
 
     def get_features_with_label(self, img_data, label):
@@ -38,10 +41,10 @@ class GateClassifier:
         if (self.lsvm == None):
             pos_imgs = []
             neg_imgs = []
-            for img in glob.glob('data/gate/positive/*.jpg'):
+            for img in glob.glob(self.positive_image_path):
                 n = cv2.imread(img)
                 pos_imgs.append(n)
-            for img in glob.glob('data/gate/negative/*.jpg'):
+            for img in glob.glob(self.negative_image_path):
                 n = cv2.imread(img)
                 neg_imgs.append(n)
             positive_data = self.get_features_with_label(pos_imgs, 1)
