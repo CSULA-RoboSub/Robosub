@@ -2,7 +2,7 @@ import cv2
 import glob
 import numpy as np
 import pandas as pd
-import utils as ut
+#import utils as ut # not used
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 import Classifier
@@ -16,20 +16,14 @@ class GateClassifier:
         self.cell_size = (8, 8)
         self.bins = 9
         self.dims = (80, 80)
-        self.hog = None # init in first-time method call
+        self.hog = cv2.HOGDescriptor(
+            self.dims,
+            self.block_size,
+            self.block_stride,
+            self.cell_size,
+            self.bins
+        )
         self.lsvm = None # init in first-time method call
-
-
-    def get_hog(self):
-        if (self.hog == None):
-            self.hog = cv2.HOGDescriptor(
-                self.dims,
-                self.block_size,
-                self.block_stride,
-                self.cell_size,
-                self.bins,
-            )
-        return self.hog
             
 
     def get_features_with_label(self, img_data, label):
@@ -73,7 +67,7 @@ class GateClassifier:
             self.lsvm = SVC(kernel="linear", C = 1.0, probability=True, random_state=2)
             self.lsvm.fit(feat_train, label_train)
             
-            result = self.lsvm.predict(feat_test) # ?
+            #result = self.lsvm.predict(feat_test) # not used
 
         return self.lsvm
 
