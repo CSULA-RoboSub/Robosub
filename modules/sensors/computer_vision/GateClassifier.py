@@ -6,10 +6,14 @@ import pandas as pd
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 import Classifier
+import sys
+from sklearn.externals import joblib
 
 class GateClassifier:
 
     def __init__(self):
+        self.model_path = 'models/gate/'
+        self.model_file_name = 'svm.pkl'
         self.positive_image_path = 'data/gate/positive/*.jpg' # maybe add different file formats??
         self.negative_image_path = 'data/gate/negative/*.jpg'
         self.min_dim = 80
@@ -25,8 +29,19 @@ class GateClassifier:
             self.cell_size,
             self.bins
         )
-        self.lsvm = SVC(kernel="linear", C = 1.0, probability=True, random_state=2)
-        self.train_lsvm()
+        self.vers_label = "py2" # for appending python version to file name
+        if (sys.version_info >= (3, 0) ): # since joblib is picky with versions
+            self.vers_label = "py3" # just for my mac
+
+        try: # load/store trained model
+            self.lsvm = joblib.load(self.model_path + self.vers_label + "_" + self.model_file_name) # load model from disk
+            print("\nLoading model from disk...\n")
+        except:
+            print("\nTraining model...")
+            self.lsvm = SVC(kernel="linear", C = 1.0, probability=True, random_state=2)
+            self.train_lsvm()
+            joblib.dump(self.lsvm, self.model_path + self.vers_label + "_" + self.model_file_name) # store model object to disk
+            print("\nStoring model to location: " + "\"" + self.model_path + "\"\n")
 
     def get_features_with_label(self, img_data, label):
         data = []
@@ -69,6 +84,7 @@ class GateClassifier:
             random_state=2
         )
         self.lsvm.fit(feat_train, label_train)
+        
 
 
     '''
