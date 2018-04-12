@@ -78,8 +78,6 @@ class GateClassifier:
     def classify(self, frame, roi): #roi = regions of interest
         gate = None
         max_val = 0
-        print("roi", roi)
-        print("lsvm", self.lsvm)
         for box in roi:
             x, y, w, h = box
             window = frame[y:y + h, x:x + w, :]
@@ -88,5 +86,4 @@ class GateClassifier:
             prob = self.lsvm.predict_proba( feat.reshape(1, -1) )[0]
             if prob[1] > .1 and prob[1] > max_val:
                 gate = box
-        print("classify", gate)
         return gate
