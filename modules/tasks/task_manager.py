@@ -37,6 +37,7 @@
 ## to the 'chatter' topic
 
 import rospy
+import math
 from auv_cal_state_la_2017.msg import CVIn
 from auv_cal_state_la_2017.msg import CVOut
 
@@ -54,9 +55,11 @@ class TaskManager:
         self.coordinates = []
         self.dice_pair = []
         
-        self.gate_ins = False
-        self.buoy_ins = False
-        self.dice_ins = False
+        self.gate_flag = False
+        self.buoy_flag = False
+        self.dice_flag = False
+        self.roulette_flag = False
+        self.dice_in_flag = False
         self.complete_first_die = False
         self.complete_second_die = False
 
@@ -64,12 +67,12 @@ class TaskManager:
         """ When gate_detect task is called. """
 
         print("detect_gate")
-        if not self.gate_ins:
+        if not self.gate_flag:
             self.detectgate = GateDetector.GateDetector()
-            self.gate_ins = True
-
+            self.gate_flag = True
         found, gate_coordinates = self.detectgate.detect()
-        if (gate_coordinates[0] == 0 and gate_coordinates[1] == 0):
+        ''' add 'and found is True' when gate circle works '''
+        if (gate_coordinates[0] == 0 and gate_coordinates[1] == 0 and found is True):
             global gate_found
             gate_found = True
         return found, gate_coordinates
@@ -79,7 +82,7 @@ class TaskManager:
         """ When dice_detect task is called. """
         
         print("detect_dice")
-        if not self.dice_ins:
+        if not self.gate_flag:
             self.detectdice = DiceDetector.DiceDetector()
             self.dice_int = True
 
@@ -96,6 +99,10 @@ class TaskManager:
         """ When roulette_detect task is called. """
 
         print("detect_roulette")
+        if not self.roulette_flag:
+            self.detectroulette = detectroulette.detect()
+            self.roulette_flag = True
+
         found, roulette_coordinates = self.detectroulette.detect()
         if (roulette_coordinates[0] == 0 and roulette_coordinates[1] == 0):
             global roulette_found
@@ -121,12 +128,16 @@ class TaskManager:
         """ The proceed to coordinates """
 
         print("detect_buoy")
-        if not self.buoy_ins:
+        if not self.buoy_flag:
             self.detectbuoy = BuoyDetector.BuoyDetector()
-            self.buoy_ins = True
+            self.buoy_flag = True
 
         found, buoy_coordinates = self.detectbuoy.detect()
+        if (buoy_coordinates[0] == 0 and buoy_coordinates[1] == 0 and found is True):
+            global buoy_found
+            buoy_found = True
         return found, buoy_coordinates
+
 
     def complete_gate(self):
         """ Will run to complete the gate task. """
@@ -158,8 +169,11 @@ class TaskManager:
             elif (y < lower_bound):
                 coord_y = -1
         else:
+            global gate_done
             gate_done = True
             print('circling gate completed')
+            coord_x = 0
+            coord_y = 0
         
         return True, [coord_x, coord_y]
 
@@ -203,6 +217,18 @@ class TaskManager:
         print('Shutting down Taskmanager')
 
 tm = TaskManager()
+buoy_found = False
+gate_found = False
+dice_found = False
+roulette_found = False
+cash_in_found = False
+
+gate_circle_loc = 0
+
+gate_done = False
+dice_done = False
+roulette_done = False
+cash_in_done = False
 
 def talker():
     # pub = rospy.Publisher('cv_to_master', CVIn)
@@ -232,24 +258,28 @@ def talker():
     r = rospy.Rate(30) #30hz
     
     msg = CVIn()
-    gate_found = False
-    dice_found = False
-    roulette_found = False
-    cash_in_found = False
+    global buoy_found
+    global gate_found
+    global dice_found
+    global roulette_found
+    global cash_in_found
 
-    gate_circle_loc = 0
-
-    gate_done = False
-    dice_done = False
-    roulette_done = False
-    cash_in_done = False
+    global gate_done
+    global dice_done
+    global roulette_done
+    global cash_in_done
 
     while not rospy.is_shutdown():
     #   msg.found, coords = tm.detect_buoy()
     # task manager will need to get task from auv(houston)"""
     # which will be give to houston by the task queue """
         if (userinput == 'buoy'):
-            msg.found, coords = tm.detect_buoy()
+            if not buoy_found:
+                msg.found, coords = tm.detect_buoy()
+            else:
+                print('buoy detect completed---------------')
+                rospy.on_shutdown(close)
+                break
         elif (userinput == 'dice'):
             if not dice_found:
                 msg.found, coords = tm.detect_dice()
@@ -257,12 +287,16 @@ def talker():
                 msg.found, coords = tm.complete_dice()
         elif (userinput == 'gate'):
             if not gate_found:
+                print('gate detect-----------------')
                 msg.found, coords = tm.detect_gate()
             else:
                 if not gate_done:
+                    print('gate detect completed-------------')
                     msg.found, coords = tm.complete_gate()
                 else:
+                    print('gate task completed---------------')
                     rospy.on_shutdown(close)
+                    break
         else:
             print('incorrect user input, please try again')
             rospy.on_shutdown(close)
