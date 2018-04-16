@@ -73,21 +73,21 @@ class Keyboard():
         """Navigates robosub with given character input and power"""
 
         if char == 'w':
-            self.navigation.navigate(power, 'forward', 0.0)
+            self.navigation.navigate(0, power, 0, 0.0)
         elif char == 'a':
-            self.navigation.navigate(power, 'none', -10.0)
+            self.navigation.navigate(0, 0, 0, -10.0)
         elif char == 's':
-            self.navigation.navigate(power, 'backward', 0.0)
+            self.navigation.navigate(0, -power, 0, 0.0)
         elif char == 'd':
-            self.navigation.navigate(power, 'none', 10.0)
+            self.navigation.navigate(0, 0, 0, 10.0)
         elif char == 'q':
-            self.navigation.navigate(power, 'left', 0.0)
+            self.navigation.navigate(-power, 0, 0, 0.0)
         elif char == 'e':
-            self.navigation.navigate(power, 'right', 0.0)
+            self.navigation.navigate(power, 0, 0, 0.0)
         elif char == 'r':
-            self.navigation.navigate(power, 'up', 0.0)
+            self.navigation.navigate(0, 0, power, 0.0)
         elif char == 'f':
-            self.navigation.navigate(power, 'down', 0.0)
+            self.navigation.navigate(0, 0, -power, 0.0)
 
     def start(self):
         """Allows keyboard navigation when killswitch is plugged in"""
