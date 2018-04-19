@@ -14,7 +14,7 @@ class Navigation():
     def __init__(self):
         self.is_killswitch_on = False
 
-        # used for HControl (int state, float depth) #######################################
+        # used for HControl (int state, float depth, int power) #######################################
         self.hStates = {
             'down': 0,
             'staying': 1,
@@ -24,7 +24,9 @@ class Navigation():
 
         self.depth = None  # depth (nonstop moving: -1, moving distance: x)
 
-        # used for RControl (int state, float rotation) ####################################
+        self.hPower = None  # power
+
+        # used for RControl (int state, float rotation, int power) ####################################
         self.rStates = {
             'left': 0,  # rotate left
             'staying': 1,
@@ -35,6 +37,8 @@ class Navigation():
         self.rState = None  # state
 
         self.rotation = None  # rotation (nonstop rotating: -1, rotate degree: x)
+
+        self.rPower = None  # power
 
         # used for MControl (int state, int mDirection, float power, float distance) #######
         self.mStates = {
@@ -57,16 +61,17 @@ class Navigation():
 
         self.mDirection = None  # mDirection
 
-        self.power = None  # power (none: 0, motor power: x)
+        self.mPower = None  # power (none: 0, motor power: x)
 
         self.distance = None  # distance (distance away from the object: x)
 
         self.runningTime = None  # runningTime (time for the motor to turn on)
 
-    def set_h_nav(self, hState, depth):
+    def set_h_nav(self, hState, depth, hPower):
         """
-        hState: 'down': 0, 'staying': 1, 'up': 2
-        depth: nonstop moving: -1, moving distance: x
+        hState -- 'down': 0, 'staying': 1, 'up': 2
+        depth -- nonstop moving: -1, moving distance: x
+        hPower -- int
         """
 
         if hState.isdigit():
@@ -76,10 +81,13 @@ class Navigation():
 
         self.depth = depth
 
-    def set_r_nav(self, rState, rotation):
+        self.hPower = hPower
+
+    def set_r_nav(self, rState, rotation, rPower):
         """
-        rState: 'left': 0, 'staying': 1, 'right': 2, 'rotate_front_cam_dist': 3, 'keep_rotate_front_cam_dist': 4
-        rotation: nonstop rotating: -1, rotate degree: x
+        rState -- 'left': 0, 'staying': 1, 'right': 2, 'rotate_front_cam_dist': 3, 'keep_rotate_front_cam_dist': 4
+        rotation -- nonstop rotating: -1, rotate degree: x
+        rPower -- int
         """
 
         if rState.isdigit():
@@ -89,11 +97,13 @@ class Navigation():
 
         self.rotation = rotation
 
+        self.rPower = rPower
+
     def set_m_nav(self, mState, mDirection, value):
         """
-        mState: 'off': 0, 'power': 1, 'distance': 2, 'front_cam_center': 3, 'bot_cam_center': 4, 'motor_time': 5
-        mDirection: 'none': 0, 'forward': 1, 'right': 2, 'backward': 3, 'left': 4
-        value: based on mState
+        mState -- 'off': 0, 'power': 1, 'distance': 2, 'front_cam_center': 3, 'bot_cam_center': 4, 'motor_time': 5
+        mDirection -- 'none': 0, 'forward': 1, 'right': 2, 'backward': 3, 'left': 4
+        value -- based on mState
             (1)power: none: 0, motor power: x
             (2)distance: distance away from the object: x
             (5)runningTime: time for the motor to turn on
@@ -109,69 +119,73 @@ class Navigation():
         else:
             self.mDirection = self.directions[mDirection]
 
-        self.power = 0.0
+        self.mPower = 0.0
         self.distance = 0.0
         self.runningTime = 0.0
 
         if self.mState == self.mStates['power']:
-            self.power = value
+            self.mPower = value
         elif self.mState == self.mStates['distance']:
             self.distance = value
         elif self.mState == self.mStates['motor_time']:
             self.runningTime = value
 
-    def h_nav(self, hState=None, depth=None):
+    def h_nav(self, hState=None, depth=None, hPower=None):
         """
         Start horizontal navigation given hState and depth when killswitch is on.
-        hState: 'down': 0, 'staying': 1, 'up': 2
-        depth: nonstop moving: -1, moving distance: x
+        hState -- 'down': 0, 'staying': 1, 'up': 2
+        depth -- nonstop moving: -1, moving distance: x
+        hPower -- int
         """
 
         if self.is_killswitch_on:
 
-            if hState is not None or depth is not None:
-                self.set_h_nav(hState, depth)
+            if hState is not None or depth is not None or hPower is not None:
+                self.set_h_nav(hState, depth, hPower)
 
             pub_h_nav = rospy.Publisher('height_control', HControl, queue_size=100)
 
             h_control = HControl()
             h_control.state = self.hState
             h_control.depth = self.depth
+            h_control.power = self.hPower
 
             pub_h_nav.publish(h_control)
             rospy.sleep(.1)
 
-            print('state: %d depth: %.2f' % (self.hState, self.depth))
+            print('state: %d depth: %.2f power: %d' % (self.hState, self.depth, self.hPower))
 
-    def r_nav(self, rState=None, rotation=None):
+    def r_nav(self, rState=None, rotation=None, rPower=None):
         """
         Start rotational navigation given rState and rotation when killswitch is on.
-        rState: 'left': 0, 'staying': 1, 'right': 2, 'rotate_front_cam_dist': 3, 'keep_rotate_front_cam_dist': 4
-        rotation: nonstop rotating: -1, rotate degree: x
+        rState -- 'left': 0, 'staying': 1, 'right': 2, 'rotate_front_cam_dist': 3, 'keep_rotate_front_cam_dist': 4
+        rotation -- nonstop rotating: -1, rotate degree: x
+        rPower -- int
         """
 
         if self.is_killswitch_on:
 
-            if rState is not None or rotation is not None:
-                self.set_r_nav(rState, rotation)
+            if rState is not None or rotation is not None or rPower is not None:
+                self.set_r_nav(rState, rotation, rPower)
 
             pub_r_nav = rospy.Publisher('rotation_control', RControl, queue_size=100)
 
             r_control = RControl()
             r_control.state = self.rState
             r_control.rotation = self.rotation
+            r_control.power = self.rPower
 
             pub_r_nav.publish(r_control)
             rospy.sleep(.1)
 
-            print('state: %d rotation: %.2f' % (self.rState, self.rotation))
+            print('state: %d rotation: %.2f power: %d' % (self.rState, self.rotation, self.rPower))
 
     def m_nav(self, mState=None, mDirection=None, value=None):
         """
         Start movement navigation given mState, mDirection, and power/distance/runningTime when killswitch is on.
-        mState: 'off': 0, 'power': 1, 'distance': 2, 'front_cam_center': 3, 'bot_cam_center': 4, 'motor_time': 5
-        mDirection: 'none': 0, 'forward': 1, 'right': 2, 'backward': 3, 'left': 4
-        value: based on mState
+        mState -- 'off': 0, 'power': 1, 'distance': 2, 'front_cam_center': 3, 'bot_cam_center': 4, 'motor_time': 5
+        mDirection -- 'none': 0, 'forward': 1, 'right': 2, 'backward': 3, 'left': 4
+        value -- based on mState
             (1)power: none: 0, motor power: x
             (2)distance: distance away from the object: x
             (5)runningTime: time for the motor to turn on
@@ -186,7 +200,7 @@ class Navigation():
 
             m_control = MControl()
             m_control.state = self.mState
-            m_control.power = self.power
+            m_control.power = self.mPower
             m_control.distance = self.distance
             m_control.runningTime = self.runningTime
 
@@ -195,7 +209,7 @@ class Navigation():
 
             print(
                 'state: %d direction: %d power: %.2f distance: %.2f runningTime: %.2f'
-                % (self.mState, self.mDirection, self.power, self.distance, self.runningTime))
+                % (self.mState, self.mDirection, self.mPower, self.distance, self.runningTime))
 
     def start(self):
         """Starts navigation with set preferences when killswitch is plugged in"""
