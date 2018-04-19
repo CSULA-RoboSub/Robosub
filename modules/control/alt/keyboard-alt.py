@@ -12,28 +12,24 @@ class Keyboard():
     e: right
     r: up
     f: down
-    [0-9]: power [1]: 10% [0]: 100%
-    `: stop
+    [0-9]: power
     c: custom power
-    v: custom rotation
     x: exit
     """
 
     def __init__(self):
         self.is_killswitch_on = False
         self.multiplier = 40
-        self.r_multiplier = 18.0
         self.navigation = Navigation()
 
     def getch(self):
         """Gets keyboard input if killswitch is plugged in"""
 
         getch = _Getch()
-        accepted = ['w', 'a', 's', 'd', 'q', 'e', 'r', 'f', '`']
+        accepted = ['w', 'a', 's', 'd', 'q', 'e', 'r', 'f']
         response = ''
         char = 0
         power = self.multiplier
-        rotation = self.r_multiplier
 
         if self.is_killswitch_on:
             print(
@@ -46,67 +42,52 @@ class Keyboard():
                 \ne: right\
                 \nr: up\
                 \nf: down\
-                \n[0-9]: power [1]: 10% [0]: 100%\
-                \n`: stop\
+                \n[0-9]: power\
                 \nc: custom power\
-                \nv: custom rotation\
                 \nx: exit')
 
             while char != 'x':
                 char = getch()
 
                 if char in accepted:
-                    self.navigate(char, power, rotation)
+                    self.navigate(char, power)
                 elif char.isdigit():
                     if char == '0':
                         power = int(10) * self.multiplier
-                        rotation = int(10) * self.r_multiplier
                     else:
                         power = int(char) * self.multiplier
-                        rotation = int(char) * self.r_multiplier
 
-                    print('power: %d rotation: %.2f degrees' % (power, rotation))
+                    print('power is changed to %s' % power)
                 elif char == 'c':
                     while not response.isdigit() or int(response) < 0 or int(response) > 400:
                         response = raw_input('\nEnter a custom power value [0-400]: ')
 
-                    power = int(response)
+                    power = response
                     response = ''
-                    print('power: %d' % power)
-                elif char == 'v':
-                    while not response.isdigit() or float(response) < 0.0 or float(response) > 180.0:
-                        response = raw_input('\nEnter a custom rotation value [0-180]: ')
-
-                    rotation = float(response)
-                    response = ''
-                    print('power: %.2f' % rotation)
+                    print('power is changed to %s' % power)
 
         else:
             print('Magnet is not plugged in.')
 
-    def navigate(self, char, power, rotation):
+    def navigate(self, char, power):
         """Navigates robosub with given character input and power"""
 
-        if char == '`':
-            self.navigation.h_nav('staying', 0)
-            self.navigation.r_nav('staying', 0)
-            self.navigation.m_nav('power', 'none', 0)
-        elif char == 'w':
-            self.navigation.m_nav('power', 'forward', power)
+        if char == 'w':
+            self.navigation.navigate(0, power, 0, 0.0)
         elif char == 'a':
-            self.navigation.r_nav('left', rotation)
+            self.navigation.navigate(0, 0, 0, -10.0)
         elif char == 's':
-            self.navigation.m_nav('power', 'backward', power)
+            self.navigation.navigate(0, -power, 0, 0.0)
         elif char == 'd':
-            self.navigation.r_nav('right', rotation)
+            self.navigation.navigate(0, 0, 0, 10.0)
         elif char == 'q':
-            self.navigation.m_nav('power', 'left', power)
+            self.navigation.navigate(-power, 0, 0, 0.0)
         elif char == 'e':
-            self.navigation.m_nav('power', 'left', power)
+            self.navigation.navigate(power, 0, 0, 0.0)
         elif char == 'r':
-            self.navigation.h_nav('up', power)
+            self.navigation.navigate(0, 0, power, 0.0)
         elif char == 'f':
-            self.navigation.h_nav('down', power)
+            self.navigation.navigate(0, 0, -power, 0.0)
 
     def start(self):
         """Allows keyboard navigation when killswitch is plugged in"""
