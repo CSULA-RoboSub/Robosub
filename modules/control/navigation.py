@@ -153,7 +153,7 @@ class Navigation():
             pub_h_nav.publish(h_control)
             rospy.sleep(.1)
 
-            print('state: %d depth: %.2f power: %d' % (self.hState, self.depth, self.hPower))
+            # print('state: %d depth: %.2f power: %d' % (self.hState, self.depth, self.hPower))
 
     def r_nav(self, rState=None, rotation=None, rPower=None):
         """
@@ -178,7 +178,7 @@ class Navigation():
             pub_r_nav.publish(r_control)
             rospy.sleep(.1)
 
-            print('state: %d rotation: %.2f power: %d' % (self.rState, self.rotation, self.rPower))
+            # print('state: %d rotation: %.2f power: %d' % (self.rState, self.rotation, self.rPower))
 
     def m_nav(self, mState=None, mDirection=None, value=None):
         """
@@ -200,6 +200,7 @@ class Navigation():
 
             m_control = MControl()
             m_control.state = self.mState
+            m_control.mDirection = self.mDirection
             m_control.power = self.mPower
             m_control.distance = self.distance
             m_control.runningTime = self.runningTime
@@ -207,9 +208,10 @@ class Navigation():
             pub_m_nav.publish(m_control)
             rospy.sleep(.1)
 
-            print(
-                'state: %d direction: %d power: %.2f distance: %.2f runningTime: %.2f'
-                % (self.mState, self.mDirection, self.mPower, self.distance, self.runningTime))
+            # print(
+            #     'state: %d direction: %d power: %.2f distance: %.2f runningTime: %.2f'
+            #     % (self.mState, self.mDirection, self.mPower, self.distance, self.runningTime)
+            # )
 
     def start(self):
         """Starts navigation with set preferences when killswitch is plugged in"""

@@ -131,6 +131,30 @@ class CLI(cmd.Cmd):
         else:
             return args
 
+    # status logger ####################################################################################################
+    def do_logging(self, arg):
+        '\nTurn on or off status logging [on/off] or [1/0]\
+         \n[toggle] to toggle logging\
+         \n[state] or no argument to print current state'
+
+        if arg.lower() == 'on' or arg == '1':
+            AUV.status_logger.toggle_logging(1)
+        elif arg.lower() == 'off' or arg == '0':
+            AUV.status_logger.toggle_logging(0)
+        elif arg.lower() == 'toggle':
+            AUV.status_logger.toggle_logging()
+        else:
+            print('\nstatus logging state: %d' % AUV.status_logger.is_logging)
+
+    # auto-complete status logger
+    def complete_logging(self, text, line, start_index, end_index):
+        args = ['on', 'off', 'toggle', 'state']
+
+        if text:
+            return [arg for arg in args if arg.startswith(text)]
+        else:
+            return args
+
     # exit #############################################################################################################
     def do_exit(self, arg):
         '\nExits auv'

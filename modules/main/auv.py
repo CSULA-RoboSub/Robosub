@@ -7,6 +7,7 @@ from std_msgs.msg import Int8
 from modules.control.motor import Motor
 from modules.control.navigation import Navigation
 from modules.control.keyboard import Keyboard
+from modules.main.status_logger import StatusLogger
 
 
 class AUV():
@@ -32,6 +33,7 @@ class AUV():
         self.motor = Motor(self.motor_state)  # initialize Motor() class
         self.navigation = Navigation()  # initialize Navigation() class
         self.keyboard = Keyboard()  # initialize Keyboard() class
+        self.status_logger = StatusLogger()  # initialize StatusLogger() class
         # TODO self.cv = CV() # initialize CV() class
 
     def get_config(self):
