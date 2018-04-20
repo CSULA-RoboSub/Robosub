@@ -80,7 +80,7 @@ class CLI(cmd.Cmd):
 
     # motor ############################################################################################################
     def do_motor(self, arg):
-        '\nTurn on or off motors [on/off] or [1/0]\
+        '\n[on/off] or [1/0] Turn on or off motors\
          \n[toggle] to toggle the current state\
          \n[state] or no argument to print current state'
 
@@ -105,22 +105,20 @@ class CLI(cmd.Cmd):
     # navigation #######################################################################################################
     def do_navigation(self, arg):
         '\n[cv] toggle computer vision task manager\
-         \n[keyboard] keyboard manual navigation\
-         \n[x_value y_value z_value rotation_value]:\n\
-         \nhorizontal x movement: negative = left, positive = right, 0 = no x movement\
-         \nhorizontal y movement: negative = backwards, positive = forwards, 0 = no y movement\
-         \nvertical movement: negative = down, positive = up, 0 = no vertical movement\
-         \nrotation: negative = left, positive = right, 0 = no rotation'
+         \n[keyboard] keyboard manual navigation'
 
         if arg.lower() == 'cv' or arg.lower() == 'tm':
             # TODO cv taskmanager
             print(arg)
         elif arg.lower() == 'keyboard' or arg.lower() == 'kb':
             AUV.keyboard_nav()
-        elif len(arg.split()) == 4:
-            AUV.navigation.navigate(*parse(arg))
+        # elif len(arg.split()) == 4:
+        #     AUV.navigation.navigate(*parse(arg))
         else:
-            print('Not a valid navigation argument')
+            print(
+                '\n[cv] toggle computer vision task manager\
+                 \n[keyboard] keyboard manual navigation'
+            )
 
     # auto-complete navigation
     def complete_navigation(self, text, line, start_index, end_index):
@@ -131,9 +129,30 @@ class CLI(cmd.Cmd):
         else:
             return args
 
+    # CV model picker ##################################################################################################
+    def do_model(self, arg):
+        '\n[0/1/2/3/4] Change to a specific CV model\
+         \n[view] view current CV model'
+
+        if arg >= 0 and arg <= 4:
+            AUV.model_picker.change_model(arg)
+        else:
+            AUV.model_picker.get_model()
+
+
+    # auto-complete status logger
+    def complete_model(self, text, line, start_index, end_index):
+        args = ['view']
+
+        if text:
+            return [arg for arg in args if arg.startswith(text)]
+        else:
+            return args
+
+
     # status logger ####################################################################################################
     def do_logging(self, arg):
-        '\nTurn on or off status logging [on/off] or [1/0]\
+        '\n[on/off] or [1/0] Turn on or off status logging\
          \n[toggle] to toggle logging\
          \n[state] or no argument to print current state'
 
