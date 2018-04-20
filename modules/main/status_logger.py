@@ -13,9 +13,9 @@ class StatusLogger():
     def __init__(self, is_logging=True):
         self.is_logging = is_logging
 
-        self.h_status = rospy.Subscriber('height_control_status', HControl, self.printHControl)
-        self.r_status = rospy.Subscriber('rotation_control_status', RControl, self.printRControl)
-        self.m_status = rospy.Subscriber('movement_control', MControl, self.printMControl)
+        rospy.Subscriber('height_control_status', HControl, self.printHControl)
+        rospy.Subscriber('rotation_control_status', RControl, self.printRControl)
+        rospy.Subscriber('movement_control_status', MControl, self.printMControl)
 
     def toggle_logging(self, arg=None):
         """Toggles logging (True, False, empty == toggle)"""
@@ -34,6 +34,8 @@ class StatusLogger():
         print('\nstatus logging set to %d' % self.is_logging)
 
     def printHControl(self, data):
+        """Callback. Prints all the data for HControl"""
+
         if self.is_logging:
             hStates = {
                 0: 'down',
@@ -47,6 +49,8 @@ class StatusLogger():
             )
 
     def printRControl(self, data):
+        """Callback. Prints all the data for RControl"""
+
         if self.is_logging:
             rStates = {
                 0: 'left',  # rotate left
@@ -62,6 +66,8 @@ class StatusLogger():
             )
 
     def printMControl(self, data):
+        """Callback. Prints all the data for MControl"""
+
         if self.is_logging:
             mStates = {
                 0: 'off',

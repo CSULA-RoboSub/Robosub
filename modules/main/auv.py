@@ -16,13 +16,7 @@ class AUV():
     def __init__(self):
         rospy.init_node('AUV', anonymous=True)  # initialize AUV rosnode
 
-        def callback(data):
-            if data.data == 1:
-                self.start()
-            if data.data == 0:
-                self.stop()
-
-        rospy.Subscriber('kill_switch', Int8, callback)  # Subscriber for magnet kill switch
+        rospy.Subscriber('kill_switch', Int8, self.kill_switch_callback)  # Subscriber for magnet kill switch
 
         self.motor_state = 0
         self.tasks = []
@@ -35,6 +29,12 @@ class AUV():
         self.keyboard = Keyboard()  # initialize Keyboard() class
         self.status_logger = StatusLogger()  # initialize StatusLogger() class
         # TODO self.cv = CV() # initialize CV() class
+
+    def kill_switch_callback(self, data):
+        if data.data == 1:
+            self.start()
+        if data.data == 0:
+            self.stop()
 
     def get_config(self):
         """Reads variables from config/config.ini file.
