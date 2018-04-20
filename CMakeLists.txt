@@ -49,7 +49,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  Navigate.msg
+  # Navigate.msg
+  HControl.msg
+  RControl.msg
+  MControl.msg
 )
 
 ## Generate services in the 'srv' folder
