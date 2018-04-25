@@ -124,7 +124,7 @@ class Keyboard():
         elif char == 'q':
             self.navigation.m_nav('power', 'left', power)
         elif char == 'e':
-            self.navigation.m_nav('power', 'left', power)
+            self.navigation.m_nav('power', 'right', power)
         elif char == 'r':
             self.navigation.h_nav('up', height, power)
         elif char == 'f':

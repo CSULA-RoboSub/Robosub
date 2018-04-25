@@ -14,6 +14,14 @@ class Navigation():
     def __init__(self):
         self.is_killswitch_on = False
 
+        self.pub_h_nav = rospy.Publisher('height_control', HControl, queue_size=100)
+        self.pub_r_nav = rospy.Publisher('rotation_control', RControl, queue_size=100)
+        self.pub_m_nav = rospy.Publisher('movement_control', MControl, queue_size=100)
+
+        self.h_control = HControl()
+        self.r_control = RControl()
+        self.m_control = MControl()
+
         # used for HControl (int state, float depth, int power) #######################################
         self.hStates = {
             'down': 0,
@@ -143,17 +151,14 @@ class Navigation():
             if hState is not None or depth is not None or hPower is not None:
                 self.set_h_nav(hState, depth, hPower)
 
-            pub_h_nav = rospy.Publisher('height_control', HControl, queue_size=100)
+            self.h_control.state = self.hState
+            self.h_control.depth = self.depth
+            self.h_control.power = self.hPower
 
-            h_control = HControl()
-            h_control.state = self.hState
-            h_control.depth = self.depth
-            h_control.power = self.hPower
-
-            pub_h_nav.publish(h_control)
+            self.pub_h_nav.publish(self.h_control)
             rospy.sleep(.1)
 
-            print('state: %d depth: %.2f power: %d' % (self.hState, self.depth, self.hPower))
+            # print('state: %d depth: %.2f power: %d' % (self.hState, self.depth, self.hPower))
 
     def r_nav(self, rState=None, rotation=None, rPower=None):
         """
@@ -168,17 +173,14 @@ class Navigation():
             if rState is not None or rotation is not None or rPower is not None:
                 self.set_r_nav(rState, rotation, rPower)
 
-            pub_r_nav = rospy.Publisher('rotation_control', RControl, queue_size=100)
+            self.r_control.state = self.rState
+            self.r_control.rotation = self.rotation
+            self.r_control.power = self.rPower
 
-            r_control = RControl()
-            r_control.state = self.rState
-            r_control.rotation = self.rotation
-            r_control.power = self.rPower
-
-            pub_r_nav.publish(r_control)
+            self.pub_r_nav.publish(self.r_control)
             rospy.sleep(.1)
 
-            print('state: %d rotation: %.2f power: %d' % (self.rState, self.rotation, self.rPower))
+            # print('state: %d rotation: %.2f power: %d' % (self.rState, self.rotation, self.rPower))
 
     def m_nav(self, mState=None, mDirection=None, value=None):
         """
@@ -196,20 +198,19 @@ class Navigation():
             if mState is not None or mDirection is not None or value is not None:
                 self.set_m_nav(mState, mDirection, value)
 
-            pub_m_nav = rospy.Publisher('movement_control', MControl, queue_size=100)
+            self.m_control.state = self.mState
+            self.m_control.mDirection = self.mDirection
+            self.m_control.power = self.mPower
+            self.m_control.distance = self.distance
+            self.m_control.runningTime = self.runningTime
 
-            m_control = MControl()
-            m_control.state = self.mState
-            m_control.power = self.mPower
-            m_control.distance = self.distance
-            m_control.runningTime = self.runningTime
-
-            pub_m_nav.publish(m_control)
+            self.pub_m_nav.publish(self.m_control)
             rospy.sleep(.1)
 
-            print(
-                'state: %d direction: %d power: %.2f distance: %.2f runningTime: %.2f'
-                % (self.mState, self.mDirection, self.mPower, self.distance, self.runningTime))
+            # print(
+            #     'state: %d direction: %d power: %.2f distance: %.2f runningTime: %.2f'
+            #     % (self.mState, self.mDirection, self.mPower, self.distance, self.runningTime)
+            # )
 
     def start(self):
         """Starts navigation with set preferences when killswitch is plugged in"""
