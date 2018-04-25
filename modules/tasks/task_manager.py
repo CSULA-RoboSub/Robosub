@@ -52,8 +52,8 @@ class TaskManager:
         """ neg_gate_coords is used to invert the coordinate """
         """values to its negative or positive counterpart """
 
-        neg_gate_coords = [ -x for x in gate_coordinates]
-        return found, neg_gate_coords
+        #neg_gate_coords = [ -x for x in gate_coordinates]
+        return found, gate_coordinates
 
 
     def detect_dice(self):
@@ -97,8 +97,8 @@ class TaskManager:
         #if buoy_coordinates[0] == 0 and buoy_coordinates[1] == 0 and found is True:
         #    self.is_buoy_found = True
         
-        neg_gate_coords = [ -x for x in buoy_coordinates]
-        return found, neg_gate_coords
+        #neg_gate_coords = [ -x for x in buoy_coordinates]
+        return found, buoy_coordinates
 
 
     def complete_gate(self):
