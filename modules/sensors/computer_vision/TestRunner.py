@@ -1,6 +1,7 @@
-import BuoyDetector as bd
-bd = bd.BuoyDetector()
+import DiceDetector as dd
+dd = dd.DiceDetector(0)
 
 while True:
-    bd.detect()
-    print bd.directions
+    dd.detect()
+    #dd.pp.show_preprocess_images()
+    print dd.directions

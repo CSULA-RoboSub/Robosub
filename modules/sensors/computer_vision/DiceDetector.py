@@ -18,6 +18,7 @@ class DiceDetector:
         self.pp = dpp.DicePreprocessor()
         self.classifier = dc.DiceClassifier()
         self.directions = [None, None]
+        self.center = [640 / 2, 480 /2]
         self.dot_size = 100
 
     def locate_dice(self):
@@ -42,9 +43,10 @@ class DiceDetector:
             if utils.dist(path_centers[i]) < utils.dist(path_centers[low]):
                 low = i
 
-    def search_die(self, value):
-        candidate_dice = self.pp.get_interest_areas()
-        dice = [die for die in candidate_dice if self.classifier.predict(die) > .1]
+    def search_die(self,value):
+        _, frame = self.cap.read()
+        candidate_dice = self.pp.get_interest_regions(frame)
+        dice = [die for die in candidate_dice if self.classifier.lsvm.predict(die) > .1]
 
         for die in dice:
             if self.get_dots(die) == value:
@@ -58,3 +60,14 @@ class DiceDetector:
         dots = [d for d in dots if d[2] * d[3] < self.dot_size]
 
         return len(dots)
+
+    def detect(self):
+        _, frame = self.cap.read()
+        rois = self.pp.get_interest_regions(frame)
+        #self.pp.show_preprocess_images(frame)
+        die = self.classifier.classify(frame,rois)
+        if die != None:
+            x, y, w, h = die
+            self.directions = utils.get_directions(self.center, x, y, w, h)
+        else:
+            self.directions = [0,0]

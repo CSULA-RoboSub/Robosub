@@ -29,21 +29,30 @@ class DicePreprocessor:
 
         return output, mask, imhsv, imhsv_blur, hsv_filter
 
+    def clahe_preprocess(self,frame):
+        clone = frame.copy()
+        lab = cv2.cvtColor(clone, cv2.COLOR_BGR2LAB)
+        l, a, b = cv2.split(lab)
+        clahe = cv2.createCLAHE(3.0, (8,8))
+        cl = clahe.apply(l)
+        clahe_frame = cv2.merge((cl,a,b))
+        final = cv2.cvtColor(clahe_frame, cv2.COLOR_LAB2BGR)
+        return final
+
     def get_interest_regions(self,frame):
 
-
-        height, width, lines = frame.shape
-        center = (width / 2, height / 2)
-        pimage, mask ,hsv,hsv_blur,hsv_filter = self.preprocess(frame)
-        imgray = cv2.cvtColor(pimage, cv2.COLOR_BGR2GRAY)
-        flag, binary_image = cv2.threshold(imgray, 85, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        edges = cv2.Canny(binary_image, 50, 150)
-
-        im, contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        #cv2.imshow('pimage',pimage)
-        #cv2.imshow('mask',mask)
+        clone = frame.copy()
+        lab = cv2.cvtColor(clone, cv2.COLOR_BGR2LAB)
+        l, a, b = cv2.split(lab)
+        clahe = cv2.createCLAHE(3.0, (8,8))
+        cl = clahe.apply(l)
+        clahe_frame = cv2.merge((cl,a,b))
+        final = cv2.cvtColor(clahe_frame, cv2.COLOR_LAB2BGR)
+        gray = cv2.cvtColor(final, cv2.COLOR_BGR2GRAY)
+        #blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+        edges = cv2.Canny(gray, 100, 200)
+        im, contours, _ = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         boxes = [cv2.boundingRect(c) for c in contours]
-
         interest_regions = [b for b in boxes if b[2]*b[3] > self.roi_size]
 
         return interest_regions
