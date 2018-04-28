@@ -109,7 +109,6 @@ include/
 pip-selfcheck.json
 
 config/config.ini
-<<<<<<< HEAD
 
 # CV photos
 
@@ -119,5 +118,12 @@ modules/sensors/computer_vision/neg_images/
 modules/sensors/computer_vision/pos_dice/
 modules/sensors/computer_vision/pos_images
 modules/sensors/computer_vision/temp_negs
-=======
->>>>>>> ff6d37b1a6fe565badb94a608cb42361bab2a16b
+
+# emacs
+*~
+/#*\#
+.\#*
+
+# danny's workspace
+modules/sensors/computer_vision/main.py
+modules/sensors/computer_vision/gate_testing/
