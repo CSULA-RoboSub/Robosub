@@ -6,6 +6,8 @@ from std_msgs.msg import Int8
 # from test import test_movement
 from modules.control.motor import Motor
 from modules.control.navigation import Navigation
+from modules.control.keyboard import Keyboard
+from modules.main.status_logger import StatusLogger
 
 
 class AUV():
@@ -14,13 +16,7 @@ class AUV():
     def __init__(self):
         rospy.init_node('AUV', anonymous=True)  # initialize AUV rosnode
 
-        def callback(data):
-            if data.data == 1:
-                self.start()
-            if data.data == 0:
-                self.stop()
-
-        rospy.Subscriber('kill_switch', Int8, callback)  # Subscriber for magnet kill switch
+        rospy.Subscriber('kill_switch', Int8, self.kill_switch_callback)  # Subscriber for magnet kill switch
 
         self.motor_state = 0
         self.tasks = []
@@ -30,7 +26,15 @@ class AUV():
         # self.test
         self.motor = Motor(self.motor_state)  # initialize Motor() class
         self.navigation = Navigation()  # initialize Navigation() class
+        self.keyboard = Keyboard()  # initialize Keyboard() class
+        self.status_logger = StatusLogger()  # initialize StatusLogger() class
         # TODO self.cv = CV() # initialize CV() class
+
+    def kill_switch_callback(self, data):
+        if data.data == 1:
+            self.start()
+        if data.data == 0:
+            self.stop()
 
     def get_config(self):
         """Reads variables from config/config.ini file.
@@ -83,14 +87,22 @@ class AUV():
         with open(config_file_path, 'wb') as configfile:
             config.write(configfile)
 
+    def keyboard_nav(self):
+        """Navigate the robosub using keyboard controls"""
+
+        self.keyboard.getch()
+
     def start(self):
         """Starts the modules when magnet killswitch is plugged in"""
 
         self.motor.start()
         self.navigation.start()
+        self.keyboard.start()
         # self.cv.start(self.tasks)
 
     def stop(self):
         """Stops the modules when magnet killswitch is removed"""
 
         self.motor.stop()
+        self.navigation.stop()
+        self.keyboard.stop()
